@@ -11,7 +11,7 @@ export default function Navbar() {
         <div>
           <ul className="navbar-nav ms-auto align-items-center gap-3 flex-row">
             <li className="nav-item">
-              <button className="btn btn-sign-in">Iniciar sesión</button>
+            <Link href="/login"> <button className="btn btn-sign-in">Iniciar sesión</button></Link>
             </li>
             <li className="nav-item">
               <button className="btn btn-get-started">Comienza</button>
