@@ -1,5 +1,10 @@
+import "./login.css";
+import Footer from '../dashboard/componentes/footer';
 export default function Login() {
   return (
-    <p>Login</p>
+    <>    
+    <div className="container"></div>
+    <Footer />
+    </>
   );
 }

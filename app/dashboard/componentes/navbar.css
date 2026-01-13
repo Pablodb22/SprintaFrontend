@@ -1,0 +1,97 @@
+/* Navbar */
+.navbar-custom {
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #f0f1f4;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav-link-custom {
+  color: #6b7280;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: color 0.3s;
+}
+
+.nav-link-custom:hover {
+  color: var(--primary);
+}
+
+.btn-sign-in {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  background-color: transparent;
+  border: none;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s;
+}
+
+.btn-sign-in:hover {
+  background-color: #f3f4f6;
+}
+
+.btn-get-started {
+  background-color: var(--primary);
+  color: white;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 40px rgba(36, 99, 235, 0.2);
+  transition: all 0.3s;
+}
+
+.btn-get-started:hover {
+  background-color: #1e56d8;
+}
+
+/* Buttons */
+.btn-primary-custom {
+  background-color: var(--primary);
+  border: none;
+  color: white;
+  font-weight: 700;
+  padding: 1rem 2rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 40px rgba(36, 99, 235, 0.2);
+  transition: all 0.3s;
+}
+
+.btn-primary-custom:hover {
+  background-color: #1e56d8;
+  transform: translateY(-2px);
+}
+
+.btn-secondary-custom {
+  background-color: white;
+  color: #111318;
+  border: 1px solid #e5e7eb;
+  padding: 1rem 2rem;
+  font-weight: 700;
+  border-radius: 0.75rem;
+  transition: all 0.3s;
+}
+
+.btn-secondary-custom:hover {
+  background-color: #f9fafb;
+}
+
+.btn-cta-secondary {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 1rem 2rem;
+  font-weight: 700;
+  border-radius: 0.75rem;
+  border: none;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s;
+}
+
+.btn-cta-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
