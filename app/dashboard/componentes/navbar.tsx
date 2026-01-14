@@ -14,7 +14,7 @@ export default function Navbar() {
             <Link href="/login"> <button className="btn btn-sign-in">Iniciar sesión</button></Link>
             </li>
             <li className="nav-item">
-              <button className="btn btn-get-started">Comienza</button>
+              <Link href="/registro"><button className="btn btn-get-started">Comienza</button></Link>
             </li>
           </ul>
 
