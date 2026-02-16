@@ -8,7 +8,7 @@ export async function registroUsuario(datos: any) {
       body: JSON.stringify(datos),
     });
 
-    const data = await response.json(); // Parsea SIEMPRE para ver el error
+    const data = await response.json(); 
 
     if (!response.ok) {      
       console.error("Error completo de Laravel:", data);
