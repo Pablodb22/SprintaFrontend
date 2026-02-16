@@ -1,9 +1,40 @@
+'use client';
+
 import "./login.css";
 import Footer from '../dashboard/componentes/footer';
 import Link from "next/link";
-
+import { loginUsuario } from "../service/UsuarioService"; 
+import { useState } from "react";
 
 export default function LoginPage() {
+    const [loginData, setLoginData] = useState({
+      email: "",
+      password: ""
+    });
+ 
+    const handleChange = (e:any) => {
+      const { id, value } = e.target;
+      setLoginData(prev => ({
+        ...prev,
+        [id]: value
+      }));
+  };
+
+  const handleSubmit = async (e:any) => {
+    e.preventDefault();
+
+    try {    
+      const payload = {
+        email: loginData.email,
+        password: loginData.password
+      };
+      const response = await loginUsuario(payload);
+      console.log("Usuario logueado:", response);
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+    }
+  };
+
   return (
     <>     
       <header className="login-header">
@@ -42,6 +73,8 @@ export default function LoginPage() {
                         className="form-control form-control-custom" 
                         id="email"
                         placeholder="name@company.com"
+                        value={loginData.email}
+                        onChange={handleChange}                        
                       />
                     </div>
                    
@@ -51,10 +84,12 @@ export default function LoginPage() {
                         className="form-control form-control-custom" 
                         id="password"
                         placeholder="••••••••"
+                        value={loginData.password}
+                        onChange={handleChange}
                       />
                     </div>
                   
-                    <button type="submit" className="btn btn-primary-login w-100 mb-4">
+                    <button type="submit" className="btn btn-primary-login w-100 mb-4" onClick={handleSubmit}>
                       Inicio sesion
                     </button>
                   </form> 
