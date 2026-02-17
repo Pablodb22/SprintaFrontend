@@ -45,3 +45,26 @@ export async function loginUsuario(datos: any) {
     throw error; 
   }
 }
+
+export async function obtenerUsuario(email: string) {
+  try{
+    const response=await fetch(`http://127.0.0.1:8000/api/usuario?email=${email}`,{
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();    
+
+    if (!response.ok) { 
+      console.error("Error completo de Laravel:", data);
+      throw new Error(data.message || data.error || "Error al obtener el usuario");
+    }
+
+    return data;
+
+  }catch (error: any) {
+    console.error("Error en obtenerUsuario:", error);
+    throw error; 
+  }
+}
