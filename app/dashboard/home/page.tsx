@@ -1,8 +1,24 @@
+"use client";
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Navbar from '../componentes/navbar';
 import Footer from '../componentes/footer';
 import "./home.css";
 
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('sprinta_user');
+      if (stored) {
+        router.push('/principal');
+      }
+    } catch (err) {
+      console.warn('No se puede acceder al localstorage', err);
+    }
+  }, [router]);
   return (
     <>
       <Navbar />

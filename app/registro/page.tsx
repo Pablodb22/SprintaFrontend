@@ -4,9 +4,11 @@ import "./registro.css";
 import Footer from "../dashboard/componentes/footer";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from 'next/navigation';
 import { registroUsuario } from "../service/UsuarioService"; 
 
 export default function RegistroPage() {
+  const router = useRouter();
   const [accountType, setAccountType] = useState("Individual");
   const [registroData, setRegistroData] = useState({
     fullname: "",
@@ -14,6 +16,8 @@ export default function RegistroPage() {
     password: "",
     company: ""
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   
   const handleChange = (e:any) => {
     const { id, value } = e.target;
@@ -26,6 +30,8 @@ export default function RegistroPage() {
 const handleSubmit = async (e:any) => {
   e.preventDefault();
 
+  setError('');
+  setLoading(true);
   try {    
     const payload = {
       fullname: registroData.fullname,
@@ -36,10 +42,14 @@ const handleSubmit = async (e:any) => {
     };
 
     const response = await registroUsuario(payload);
-    console.log("Usuario registrado:", response);   
+    console.log("Usuario registrado:", response);      
+    router.push('/login');
     
-  } catch (error) {
-    console.error("Error al registrar usuario:", error);    
+  } catch (err:any) {
+    console.error("Error al registrar usuario:", err);    
+    setError(err?.message ?? String(err) ?? 'Error al registrar usuario');
+  } finally {
+    setLoading(false);
   }
 };
 
@@ -169,9 +179,19 @@ const handleSubmit = async (e:any) => {
                   )}
 
                   {/* Submit Button */}
-                  <button type="submit" className="btn btn-register-submit w-100">
-                    Crear Cuenta
+                  <button type="submit" className="btn btn-register-submit w-100" disabled={loading}>
+                    {loading ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Creando...
+                      </>
+                    ) : (
+                      'Crear Cuenta'
+                    )}
                   </button>
+                  {error && (
+                    <div className="alert alert-danger mt-2" role="alert">{error}</div>
+                  )}
                 </form>
 
                 <p className="register-terms">

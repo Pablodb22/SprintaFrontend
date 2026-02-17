@@ -3,14 +3,18 @@
 import "./login.css";
 import Footer from '../dashboard/componentes/footer';
 import Link from "next/link";
-import { loginUsuario } from "../service/UsuarioService"; 
+import { loginUsuario } from "../service/UsuarioService";
 import { useState } from "react";
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
+    const router = useRouter();
     const [loginData, setLoginData] = useState({
       email: "",
       password: ""
     });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
  
     const handleChange = (e:any) => {
       const { id, value } = e.target;
@@ -23,15 +27,28 @@ export default function LoginPage() {
   const handleSubmit = async (e:any) => {
     e.preventDefault();
 
+    setError('');
+    setLoading(true);
     try {    
       const payload = {
         email: loginData.email,
         password: loginData.password
       };
       const response = await loginUsuario(payload);
-      console.log("Usuario logueado:", response);
-    } catch (error) {
-      console.error("Error al iniciar sesión:", error);
+      console.log("Usuario logueado:", response);      
+      try {
+        if (response) {          
+          localStorage.setItem('sprinta_user', JSON.stringify(response.data ));
+        }
+      } catch (err) {
+        console.warn('No se puede crear el localstorage', err);
+      }
+      router.push('/principal');
+    } catch (err:any) {
+      console.error("Error al iniciar sesión:", err);
+      setError(err?.message ?? String(err) ?? 'Error al iniciar sesión');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,7 +82,7 @@ export default function LoginPage() {
                 </div>
                 
                 <div className="login-card">
-                  <form>                  
+                  <form onSubmit={handleSubmit}>                  
                     <div className="mb-4">
                       <label htmlFor="email" className="form-label-custom">Email</label>
                       <input 
@@ -89,9 +106,19 @@ export default function LoginPage() {
                       />
                     </div>
                   
-                    <button type="submit" className="btn btn-primary-login w-100 mb-4" onClick={handleSubmit}>
-                      Inicio sesion
+                    <button type="submit" className="btn btn-primary-login w-100 mb-4" disabled={loading}>
+                      {loading ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          Iniciando...
+                        </>
+                      ) : (
+                        'Inicio sesion'
+                      )}
                     </button>
+                    {error && (
+                      <div className="alert alert-danger mt-2" role="alert">{error}</div>
+                    )}
                   </form> 
                 </div>                                    
                 <p className="login-footer-text">
