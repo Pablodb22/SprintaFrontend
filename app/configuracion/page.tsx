@@ -1,18 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./configuracion.css";
 import Footer from "../dashboard/componentes/footer";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { obtenerUsuario } from "../service/UsuarioService";
 
 export default function ConfiguracionPage() {
   const [activeTab, setActiveTab] = useState<"profile" | "security">("profile");
   const router = useRouter();
-
+  const [usuario,setUsuario]=useState<{biografia:string, cargo:string, cod_empresa:string,created_at:Date,email:string,foto:string,id:string,nombre:string,tipo:string,ubicacion:string,updated_at:string} | null>(null);
+  const [loading, setLoading] = useState(true);
   const handleLogout = async () => {
     router.push("/");
   };
+
+  useEffect( () => {
+
+    const email = localStorage.getItem("sprinta_user");    
+    const emailSinComillas = email ? email.replace(/^"(.*)"$/, '$1') : null;
+    
+    async function obtener(){      
+      if (emailSinComillas) {
+        try{
+            const respuesta = await obtenerUsuario(emailSinComillas);
+            console.log("Respuesta del usuario:", respuesta.data);
+            setUsuario(respuesta.data);
+            setLoading(false);                    
+        }catch (error) {
+            console.error("Error al obtener el usuario:", error);
+            setLoading(false);
+        }            
+      }
+    }
+    
+    obtener();
+  }, []);
 
   return (
     <>
@@ -133,7 +157,17 @@ export default function ConfiguracionPage() {
             </aside>
 
             <div className="col-12 col-md-9 col-lg-10">
-              {activeTab === "profile" && (
+              {loading && activeTab === "profile" && (
+                <section className="settings-card">
+                  <div className="card-header">
+                    <h3 className="card-title">Perfil Público</h3>
+                  </div>
+                  <div className="settings-form" style={{ textAlign: 'center', padding: '40px' }}>
+                    <p>Cargando información...</p>
+                  </div>
+                </section>
+              )}
+              {!loading && activeTab === "profile" && (
                 <section className="settings-card">
                   <div className="card-header">
                     <h3 className="card-title">Perfil Público</h3>
@@ -194,7 +228,9 @@ export default function ConfiguracionPage() {
                           <input
                             type="text"
                             className="form-control-settings"
-                            placeholder="Alex Rivera"
+                            placeholder="Alex Johnson"
+                            value={usuario?.nombre || ''}
+                            readOnly
                           />
                         </div>
                         <div className="col-12 col-md-6">
@@ -205,6 +241,8 @@ export default function ConfiguracionPage() {
                             type="email"
                             className="form-control-settings"
                             placeholder="alex@sprinta.io"
+                            value={usuario?.email || ''}
+                            readOnly
                           />
                         </div>
                       </div>
@@ -215,6 +253,8 @@ export default function ConfiguracionPage() {
                           type="text"
                           className="form-control-settings"
                           placeholder="ej. Diseñador de Producto Senior"
+                          value={usuario?.cargo || ''}
+                          readOnly
                         />
                       </div>
 
@@ -237,6 +277,8 @@ export default function ConfiguracionPage() {
                             type="text"
                             className="form-control-settings ps-5"
                             placeholder="San Francisco, CA"
+                            value={usuario?.ubicacion || ''}
+                            readOnly
                           />
                         </div>
                       </div>
@@ -247,6 +289,8 @@ export default function ConfiguracionPage() {
                           className="form-control-settings"
                           rows={4}
                           placeholder="Breve descripción para tu perfil..."
+                          value={usuario?.biografia || ''}
+                          readOnly
                         ></textarea>
                         <p className="form-help-text">Máximo 200 caracteres.</p>
                       </div>
