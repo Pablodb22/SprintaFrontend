@@ -12,8 +12,10 @@ export default function Home() {
   useEffect(() => {
     try {
       const stored = localStorage.getItem('sprinta_user');
-      if (stored) {
+      if(stored) {
         router.push('/principal');
+      }else{
+        router.push('/');
       }
     } catch (err) {
       console.warn('No se puede acceder al localstorage', err);

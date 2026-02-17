@@ -38,7 +38,7 @@ export default function LoginPage() {
       console.log("Usuario logueado:", response);      
       try {
         if (response) {          
-          localStorage.setItem('sprinta_user', JSON.stringify(response.data ));
+          localStorage.setItem('sprinta_user', JSON.stringify(response.data.email));
         }
       } catch (err) {
         console.warn('No se puede crear el localstorage', err);
