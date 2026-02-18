@@ -68,3 +68,31 @@ export async function obtenerUsuario(email: string) {
     throw error; 
   }
 }
+
+export async function actualizarUsuario(datos: any) {
+   try{   
+    const response = await fetch(`http://127.0.0.1:8000/api/usuarioActualizado?email=${encodeURIComponent(datos.email)}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(datos),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Error completo de Laravel:", data);
+      throw new Error(data.message || data.error || "Error al actualizar el usuario");
+    }
+
+    return data;
+
+   }catch (error: any) {
+     console.error("Error en actualizarUsuario:", error);
+     throw error; 
+   }
+}
+
+export async function actualizarContraseña(datos: any) {
+
+}
