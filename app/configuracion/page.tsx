@@ -5,13 +5,14 @@ import "./configuracion.css";
 import Footer from "../dashboard/componentes/footer";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { obtenerUsuario } from "../service/UsuarioService";
+import { obtenerUsuario, actualizarContraseña, actualizarUsuario } from "../service/UsuarioService";
 
 export default function ConfiguracionPage() {
   const [activeTab, setActiveTab] = useState<"profile" | "security">("profile");
   const router = useRouter();
   const [usuario,setUsuario]=useState<{biografia:string, cargo:string, cod_empresa:string,created_at:Date,email:string,foto:string,id:string,nombre:string,tipo:string,ubicacion:string,updated_at:string} | null>(null);
   const [loading, setLoading] = useState(true);
+
   const handleLogout = async () => {
     router.push("/");
   };
@@ -38,6 +39,34 @@ export default function ConfiguracionPage() {
     obtener();
   }, []);
 
+  const enviarConfiguracion = async () => {
+    try{
+      if(usuario){
+        const respuesta = await actualizarUsuario(usuario);
+        console.log("Respuesta de actualización:", respuesta);
+      }      
+    }catch(error){
+      console.error("Error al actualizar el usuario:", error);
+    }
+  }
+
+  const contraseñaNueva= async()=>{
+    try{
+
+    }catch(error){
+      console.error("Error al actualizar la contraseña:", error);
+    }
+  }
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setUsuario(prevState => prevState ? ({
+      ...prevState,
+      [name]: value
+    }) : null);
+  }
+  
+   
   return (
     <>
       <header className="settings-header">
@@ -229,8 +258,9 @@ export default function ConfiguracionPage() {
                             type="text"
                             className="form-control-settings"
                             placeholder="Alex Johnson"
-                            value={usuario?.nombre || ''}
-                            readOnly
+                            name="nombre"
+                            value={usuario?.nombre || ''}    
+                            onChange={handleInputChange}                        
                           />
                         </div>
                         <div className="col-12 col-md-6">
@@ -240,9 +270,10 @@ export default function ConfiguracionPage() {
                           <input
                             type="email"
                             className="form-control-settings"
-                            placeholder="alex@sprinta.io"
-                            value={usuario?.email || ''}
-                            readOnly
+                            placeholder="alex@sprinta.io"                              
+                            value={usuario?.email || ''} 
+                            readOnly  
+                            onChange={handleInputChange}                       
                           />
                         </div>
                       </div>
@@ -253,8 +284,9 @@ export default function ConfiguracionPage() {
                           type="text"
                           className="form-control-settings"
                           placeholder="ej. Diseñador de Producto Senior"
+                          name="cargo"
                           value={usuario?.cargo || ''}
-                          readOnly
+                          onChange={handleInputChange}                          
                         />
                       </div>
 
@@ -277,8 +309,9 @@ export default function ConfiguracionPage() {
                             type="text"
                             className="form-control-settings ps-5"
                             placeholder="San Francisco, CA"
+                            name="ubicacion"
                             value={usuario?.ubicacion || ''}
-                            readOnly
+                            onChange={handleInputChange}                            
                           />
                         </div>
                       </div>
@@ -289,9 +322,10 @@ export default function ConfiguracionPage() {
                           className="form-control-settings"
                           rows={4}
                           placeholder="Breve descripción para tu perfil..."
-                          value={usuario?.biografia || ''}
-                          readOnly
-                        ></textarea>
+                          name="biografia"
+                          value={usuario?.biografia || ''}  
+                          onChange={handleInputChange}                         
+                        ></textarea> 
                         <p className="form-help-text">Máximo 200 caracteres.</p>
                       </div>
                     </form>
@@ -299,7 +333,7 @@ export default function ConfiguracionPage() {
 
                   <div className="card-footer">
                     <button className="btn btn-cancel">Cancelar</button>
-                    <button className="btn btn-save">Guardar Cambios</button>
+                    <button className="btn btn-save" onClick={enviarConfiguracion}>Guardar Cambios</button>
                   </div>
                 </section>
               )}
@@ -415,7 +449,7 @@ export default function ConfiguracionPage() {
 
                   <div className="card-footer">
                     <button className="btn btn-cancel">Cancelar</button>
-                    <button className="btn btn-save">
+                    <button className="btn btn-save" onClick={contraseñaNueva}>
                       Actualizar Contraseña
                     </button>
                   </div>
