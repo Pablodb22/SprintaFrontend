@@ -5,7 +5,8 @@ import "./configuracion.css";
 import Footer from "../dashboard/componentes/footer";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { obtenerUsuario, actualizarContraseña, actualizarUsuario } from "../service/UsuarioService";
+import { obtenerUsuario, actualizarContraseña, actualizarUsuario, fileToBase64 } from "../service/UsuarioService";
+import { useRef } from "react";
 
 export default function ConfiguracionPage() {
   const [activeTab, setActiveTab] = useState<"profile" | "security">("profile");
@@ -39,6 +40,23 @@ export default function ConfiguracionPage() {
     obtener();
   }, []);
 
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    try {
+      const base64 = await fileToBase64(file); 
+      setUsuario(prev => prev ? ({ ...prev, foto: base64 }) : prev);
+    } catch (err) {
+      console.error('Error al convertir la imagen a base64', err);
+    }
+  }
+
+  const triggerFileSelect = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  }
+ 
   const enviarConfiguracion = async () => {
     try{
       if(usuario){
@@ -87,8 +105,7 @@ export default function ConfiguracionPage() {
               <div
                 className="user-avatar"
                 style={{
-                  backgroundImage:
-                    'url("https://lh3.googleusercontent.com/aida-public/AB6AXuASltg1Y_ICnQE-WZ1_c7I3hJEhGyTvr39AsS4C5WCbAVVhALPWRQFwn0anv4k8i-wDhDs61PIVOWIQCjBzx5A6P6yHyBDUnDB_ojUBYki2PHGtGf7FB_gXUAjd69Q78jx9mLukjjjQCIpVEzfjXP3aH3C7HogFzwQqMQSu-vL7Oy__dYc5GBxpwHnxN6izytEAWWcH8wXtaQh34pf655ivaxjFpndasIgE8TXkFud3kc5-qPUENSqWLMrXmGMhOG7zhNdnr5ZhmWg")',
+                  backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuASltg1Y_ICnQE-WZ1_c7I3hJEhGyTvr39AsS4C5WCbAVVhALPWRQFwn0anv4k8i-wDhDs61PIVOWIQCjBzx5A6P6yHyBDUnDB_ojUBYki2PHGtGf7FB_gXUAjd69Q78jx9mLukjjjQCIpVEzfjXP3aH3C7HogFzwQqMQSu-vL7Oy__dYc5GBxpwHnxN6izytEAWWcH8wXtaQh34pf655ivaxjFpndasIgE8TXkFud3kc5-qPUENSqWLMrXmGMhOG7zhNdnr5ZhmWg")',
                 }}
               ></div>
             </div>
@@ -207,15 +224,14 @@ export default function ConfiguracionPage() {
                   </div>
 
                   <div className="profile-photo-section">
-                    <div className="avatar-container">
+                      <div className="avatar-container">
                       <div
                         className="avatar-large"
                         style={{
-                          backgroundImage:
-                            'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCd_3VJlfgjk9Z4hdWAzJoEVjmOGfzhXSkFIR-zDPQ0tnooqRtIShjR_RunV98dvO4Kxzf132jWLFHMqh3VfYgbEZMo1795SX2a3rqW0YYqetqKfdmQuywwVRMIWXxtUj1JWW7b5RQWZQtrRvlt8YTYNG8DRZQelAEtNyNouBj4Y57xKzJlzgTPKCyjiFdMLknV0jd5qGXAU8S2ymbqDkBhwSCzGJeOhwoHW-L5od08iKFIY9J3tgMkPrlNLFbIf-6rCAsalVoEp8I")',
+                          backgroundImage: usuario && usuario.foto ? `url("${usuario.foto}")` : 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCd_3VJlfgjk9Z4hdWAzJoEVjmOGfzhXSkFIR-zDPQ0tnooqRtIShjR_RunV98dvO4Kxzf132jWLFHMqh3VfYgbEZMo1795SX2a3rqW0YYqetqKfdmQuywwVRMIWXxtUj1JWW7b5RQWZQtrRvlt8YTYNG8DRZQelAEtNyNouBj4Y57xKzJlzgTPKCyjiFdMLknV0jd5qGXAU8S2ymbqDkBhwSCzGJeOhwoHW-L5od08iKFIY9J3tgMkPrlNLFbIf-6rCAsalVoEp8I")',
                         }}
                       ></div>
-                      <button className="camera-button">
+                      <button type="button" className="camera-button" onClick={triggerFileSelect}>
                         <span className="material-symbols-outlined">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -237,12 +253,7 @@ export default function ConfiguracionPage() {
                         JPG, GIF o PNG. Tamaño máximo de 800KB.
                       </p>
                       <div className="avatar-buttons">
-                        <button className="btn btn-primary-settings">
-                          Subir Nueva
-                        </button>
-                        <button className="btn btn-secondary-settings">
-                          Eliminar
-                        </button>
+                        <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileChange} />                        
                       </div>
                     </div>
                   </div>
