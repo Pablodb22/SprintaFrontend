@@ -96,3 +96,19 @@ export async function actualizarUsuario(datos: any) {
 export async function actualizarContraseña(datos: any) {
 
 }
+
+export function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string | ArrayBuffer | null;
+      if (typeof result === 'string') {
+        resolve(result);
+      } else {
+        reject(new Error('No se pudo convertir el archivo a base64'));
+      }
+    };
+    reader.onerror = (err) => reject(err);
+    reader.readAsDataURL(file);
+  });
+}
