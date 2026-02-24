@@ -94,7 +94,28 @@ export async function actualizarUsuario(datos: any) {
 }
 
 export async function actualizarContraseña(datos: any) {
+ try{
+  const response=await fetch(`http://127.0.0.1:8000/api/usuarioNuevaPassword?email=${encodeURIComponent(datos.email)}`,{
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(datos),
+  });
 
+  const data = await response.json();
+
+  if (!response.ok) {
+    console.error("Error completo de Laravel:", data);
+    throw new Error(data.message || data.error || "Error al actualizar la contraseña");
+  }
+
+  return data;
+
+ }catch (error: any) {
+    console.error("Error en actualizarContraseña:", error);
+    throw error;
+  }
 }
 
 export function fileToBase64(file: File): Promise<string> {
