@@ -13,6 +13,7 @@ export default function ConfiguracionPage() {
   const router = useRouter();
   const [usuario,setUsuario]=useState<{biografia:string, cargo:string, cod_empresa:string,created_at:Date,email:string,foto:string,id:string,nombre:string,tipo:string,ubicacion:string,updated_at:string} | null>(null);
   const [loading, setLoading] = useState(true);
+  const [contraseña,setContraseña]=useState({actual:"",nueva:"",confirmar:""});
 
   const handleLogout = async () => {
     router.push("/");
@@ -70,7 +71,10 @@ export default function ConfiguracionPage() {
 
   const contraseñaNueva= async()=>{
     try{
-
+      if(usuario){
+        const respuesta= await actualizarContraseña({email: usuario.email, actual: contraseña.actual, nueva: contraseña.nueva, confirmar: contraseña.confirmar });
+        console.log("Respuesta de actualización de contraseña:", respuesta);
+      }
     }catch(error){
       console.error("Error al actualizar la contraseña:", error);
     }
@@ -84,6 +88,13 @@ export default function ConfiguracionPage() {
     }) : null);
   }
   
+    const handleInputChangeConstraseña = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setContraseña(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  }
    
   return (
     <>
@@ -384,6 +395,8 @@ export default function ConfiguracionPage() {
                             type="password"
                             className="form-control-settings ps-5"
                             placeholder="Ingresa tu contraseña actual"
+                            name="actual"
+                            onChange={handleInputChangeConstraseña}
                           />
                         </div>
                       </div>
@@ -412,6 +425,8 @@ export default function ConfiguracionPage() {
                             type="password"
                             className="form-control-settings ps-5"
                             placeholder="Mínimo 8 caracteres"
+                            name="nueva"
+                            onChange={handleInputChangeConstraseña}
                           />
                         </div>
                       </div>
@@ -440,6 +455,8 @@ export default function ConfiguracionPage() {
                             type="password"
                             className="form-control-settings ps-5"
                             placeholder="Repite la nueva contraseña"
+                            name="confirmar"
+                            onChange={handleInputChangeConstraseña}
                           />
                         </div>
                       </div>
