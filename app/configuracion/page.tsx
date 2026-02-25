@@ -14,9 +14,15 @@ export default function ConfiguracionPage() {
   const [usuario,setUsuario]=useState<{biografia:string, cargo:string, cod_empresa:string,created_at:Date,email:string,foto:string,id:string,nombre:string,tipo:string,ubicacion:string,updated_at:string} | null>(null);
   const [loading, setLoading] = useState(true);
   const [contraseña,setContraseña]=useState({actual:"",nueva:"",confirmar:""});
+  const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
 
   const handleLogout = async () => {
     router.push("/");
+  };
+
+  const showMessage = (type: 'success' | 'error', text: string) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage(null), 3000);
   };
 
   useEffect( () => {
@@ -63,9 +69,11 @@ export default function ConfiguracionPage() {
       if(usuario){
         const respuesta = await actualizarUsuario(usuario);
         console.log("Respuesta de actualización:", respuesta);
+        showMessage('success', 'Perfil actualizado correctamente');
       }      
     }catch(error){
       console.error("Error al actualizar el usuario:", error);
+      showMessage('error', 'Error al actualizar el perfil');
     }
   }
 
@@ -74,10 +82,18 @@ export default function ConfiguracionPage() {
       if(usuario){
         const respuesta= await actualizarContraseña({email: usuario.email, actual: contraseña.actual, nueva: contraseña.nueva, confirmar: contraseña.confirmar });
         console.log("Respuesta de actualización de contraseña:", respuesta);
+        showMessage('success', 'Contraseña actualizada correctamente');
+        setContraseña({actual:"",nueva:"",confirmar:""});
       }
     }catch(error){
       console.error("Error al actualizar la contraseña:", error);
+      showMessage('error', 'Error al actualizar la contraseña');
     }
+  }
+
+  const borrarSesion = () => {
+    localStorage.removeItem("sprinta_user");
+    router.push('/');    
   }
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -123,6 +139,35 @@ export default function ConfiguracionPage() {
           </div>
         </div>
       </header>
+
+      {message && (
+        <div className={`alert alert-${message.type}`} style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          zIndex: 1000,
+          padding: '12px 20px',
+          borderRadius: '8px',
+          animation: 'slideIn 0.3s ease-in-out'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span className="material-symbols-outlined">
+              {message.type === 'success' ? (
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0"/>
+                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                  <path d="m6.305 5.272 2.379 2.379.392-.392a.5.5 0 1 1 .707.707l-.707.707 2.379 2.379a.5.5 0 1 1-.707.707L8.428 9.536l-.707.707a.5.5 0 1 1-.707-.707l.707-.707-2.379-2.379a.5.5 0 1 1 .707-.707"/>
+                </svg>
+              )}
+            </span>
+            <span>{message.text}</span>
+          </div>
+        </div>
+      )}
 
       <main className="settings-main">
         <div className="container-fluid px-4 px-md-5">
@@ -207,7 +252,7 @@ export default function ConfiguracionPage() {
                         />
                       </svg>
                     </span>
-                    <span>Cerrar Sesión</span>
+                    <span onClick={borrarSesion}>Cerrar Sesión</span>
                   </button>
                 </nav>
               </div>
@@ -353,8 +398,7 @@ export default function ConfiguracionPage() {
                     </form>
                   </div>
 
-                  <div className="card-footer">
-                    <button className="btn btn-cancel">Cancelar</button>
+                  <div className="card-footer">                    
                     <button className="btn btn-save" onClick={enviarConfiguracion}>Guardar Cambios</button>
                   </div>
                 </section>
@@ -475,8 +519,7 @@ export default function ConfiguracionPage() {
                     </form>
                   </div>
 
-                  <div className="card-footer">
-                    <button className="btn btn-cancel">Cancelar</button>
+                  <div className="card-footer">                    
                     <button className="btn btn-save" onClick={contraseñaNueva}>
                       Actualizar Contraseña
                     </button>
