@@ -33,7 +33,7 @@ export default function LoginPage() {
       const payload = {
         email: loginData.email,
         password: loginData.password
-      };
+      };      
       const response = await loginUsuario(payload);
       console.log("Usuario logueado:", response);      
       try {

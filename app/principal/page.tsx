@@ -1,14 +1,16 @@
 'use client';
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./principal.css";
 import ProyectosSection from "./components/ProyectosSection";
 import TareasSection from "./components/TareasSection";
 import EquipoSection from "./components/EquipoSection";
+import { funcionAdmin } from "../service/UsuarioService";
 
-export default function HomePage() {
+export default function HomePage() {  
   const [activeTab, setActiveTab] = useState('proyectos');
+  const [esAdmin, setEsAdmin] = useState(false);
 
   const getPageTitle = () => {
     switch(activeTab) {
@@ -18,7 +20,28 @@ export default function HomePage() {
       default: return 'Proyectos';
     }
   };
+ 
+  useEffect(() => {
+    const verificarAdmin = async () => {
+      let email = localStorage.getItem("sprinta_user");
+      if (!email) return;
+           
+      email = email.trim().replace(/^"|"$/g, '');
+      
+      try {
+        const resp = await funcionAdmin(email);   
+        console.log("respuesta verificar email: " + email)     
+        if (resp && resp.success) {
+          setEsAdmin(true);
+        }
+      } catch (err) {
+        console.error('Error verificando admin:', err);
+      }
+    };
 
+    verificarAdmin();
+  }, []);
+  
   return (
     <>
       <div className="dashboard-layout">
@@ -68,17 +91,6 @@ export default function HomePage() {
                 </button>
               </nav>
             </div>
-
-            {/* Bottom Navigation */}
-            <div className="sidebar-bottom">              
-              <Link href="/logout" className="nav-link">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-box-arrow-in-right" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5   0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0z" />
-                  <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z" />
-                </svg>
-                <span>Cerrar Sesión</span>
-              </Link>
-            </div>
           </div>
         </aside>
 
@@ -93,7 +105,7 @@ export default function HomePage() {
             </div>
 
             <div className="header-right">
-              {(activeTab === 'proyectos') && (
+              {(activeTab === 'proyectos' && esAdmin) && (
                 <button className="btn-new-project">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-plus-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
@@ -103,7 +115,7 @@ export default function HomePage() {
                 </button>
               )}
               
-              {(activeTab === 'tareas') && (
+              {(activeTab === 'tareas' && esAdmin) && (
                 <button className="btn-new-project">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-plus-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
