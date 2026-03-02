@@ -710,6 +710,72 @@
   }
 }
 
+/* Popup styles */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  max-width: 400px;
+  width: 100%;
+  max-height: 90%;
+  overflow: auto;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+}
+
+.popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.popup-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+  color: #111318;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #616e89;
+  cursor: pointer;
+  padding: 0;
+}
+
+.btn-close:hover {
+  color: #111318;
+}
+
+.popup-body {
+  flex: 1;
+  margin-bottom: 1rem;
+}
+
+.popup-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
 /* TAREAS STYLES */
 .tareas-container {
   width: 100%;
