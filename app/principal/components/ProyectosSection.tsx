@@ -1,9 +1,12 @@
 'use client';
 import { useState, useEffect } from "react";
 import { funcionAdmin } from "@/app/service/UsuarioService";
+import "../principal.css";
 
 export default function ProyectosSection() {
   const [esAdmin, setEsAdmin] = useState(false);
+  const [popUp,setPopUp]=useState(false);
+
   useEffect(() => {
       const verificarAdmin = async () => {
         let email = localStorage.getItem("sprinta_user");
@@ -24,6 +27,14 @@ export default function ProyectosSection() {
   
       verificarAdmin();
     }, []);
+
+  const mostrarPopUp = () => {
+    setPopUp(true);
+  }
+
+  const cerrarPopUp = () => {
+    setPopUp(false);
+  }
   return (
     <>
       {/* Stats Cards */}
@@ -214,7 +225,7 @@ export default function ProyectosSection() {
     
         
         {esAdmin && (
-          <div className="project-card-add">
+          <div className="project-card-add" onClick={mostrarPopUp}>
             <div className="add-icon-container">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-plus-circle" viewBox="0 0 16 16">
                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
@@ -227,6 +238,24 @@ export default function ProyectosSection() {
         )}
        
       </div>
+
+      {/* Pop-up Modal */}
+        {popUp && (
+          <div className="popup-overlay" onClick={cerrarPopUp}>
+            <div className="popup-content" onClick={(e) => e.stopPropagation()}>
+              <div className="popup-header">
+                <h3 className="popup-title">Crear Nuevo Proyecto</h3>
+                <button className="btn-close" onClick={cerrarPopUp}>&times;</button>
+              </div>
+              <div className="popup-body">
+                <p>Funcionalidad de creación próximamente...</p>
+              </div>
+              <div className="popup-footer">
+                <button className="btn-new-project" onClick={cerrarPopUp}>Cerrar</button>
+              </div>
+            </div>
+          </div>
+        )}
     </>
   );
 }
