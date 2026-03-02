@@ -1,4 +1,4 @@
-export default function TareasSection() {
+export default function TareasSection() {  
   return (
     <div className="tareas-container">
       <div className="tareas-header">
