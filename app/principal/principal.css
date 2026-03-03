@@ -1,3 +1,7 @@
+¡:root {
+  --primary: #2463eb;
+}
+
 .dashboard-layout {
   display: flex;
   height: 100vh;
@@ -49,6 +53,12 @@
 .brand-info {
   display: flex;
   flex-direction: column;
+}
+
+.brand-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111318;
 }
 
 .brand-title {
@@ -779,6 +789,115 @@
 .trabajador-item {
   padding: 0.5rem 0;
   border-bottom: 1px solid #eee;
+}
+
+/* Form popup styles */
+.form-popup {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field {
+  margin-bottom: 20px;
+}
+
+.form-field-last {
+  margin-bottom: 24px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #111318;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.form-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.form-select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-submit {
+  flex: 1;
+  padding: 12px 24px;
+  background-color: #0066cc;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-submit:hover {
+  background-color: #0052a3;
+}
+
+.btn-workers {
+  width: 100%;
+  padding: 12px;
+  background-color: #f0f2f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  color: #0066cc;
+  transition: all 0.2s;
+}
+
+.btn-workers:hover {
+  background-color: #e4e8ed;
 }
 
 /* TAREAS STYLES */
