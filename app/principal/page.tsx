@@ -15,7 +15,7 @@ export default function HomePage() {
 
   const [formProyecto, setFormProyecto] = useState({
     nombre: '',
-    tipo: 'proyecto'
+    tipo: ''
   });
 
   const [formTarea, setFormTarea] = useState({
@@ -25,8 +25,8 @@ export default function HomePage() {
     proyecto: ''
   });
 
-  const [proyectos, setProyectos] = useState<{id:string, nombre:string}[]>([]);
-  const [trabajadores, setTrabajadores] = useState<{id:string, nombre:string}[]>([]);
+  const [proyectos, setProyectos] = useState<{id:string, nombre:string,tipo:string}[]>([]);
+  const [trabajadores, setTrabajadores] = useState<{id:string, nombre:string,foto:string}[]>([]);
   const [trabajadoresSeleccionados, setTrabajadoresSeleccionados] = useState<string[]>([]);
   const [popupTrabajadores, setPopupTrabajadores] = useState(false);
 
@@ -226,15 +226,20 @@ export default function HomePage() {
                     <label className="form-label">
                       Tipo de Proyecto
                     </label>
-                    <select
-                      name="tipo"
-                      value={formProyecto.tipo}
-                      onChange={handleProyectoChange}
-                      className="form-select"
-                    >
-                      <option value="proyecto">Proyecto</option>
-                      <option value="negocio">Negocio</option>
-                    </select>
+                      <select
+                        name="tipo"
+                        value={formProyecto.tipo}
+                        onChange={handleProyectoChange}
+                        className="form-select"
+                      >
+                        <option value="">Selecciona un tipo</option>
+                        <option value="seguridad">Seguridad</option>
+                        <option value="diseno">Diseño</option>
+                        <option value="programacion">Programación</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="infraestructura">Infraestructura</option>
+                        <option value="datos">Analisis</option>
+                      </select>
                   </div>
 
                   <div className="form-actions">
@@ -287,9 +292,9 @@ export default function HomePage() {
                       onChange={handleTareaChange}
                       className="form-select"
                     >
-                      <option value="baja">🟢 Baja</option>
-                      <option value="media">🟡 Media</option>
-                      <option value="alta">🔴 Alta</option>
+                      <option value="baja">Baja</option>
+                      <option value="media">Media</option>
+                      <option value="alta">Alta</option>
                     </select>
                   </div>
 
