@@ -13,6 +13,26 @@ export default function HomePage() {
   const [esAdmin, setEsAdmin] = useState(false);
   const [popUp,setPopUp]=useState(false);
 
+  // ===== FORM PROYECTO =====
+const [formProyecto, setFormProyecto] = useState({
+  nombre: '',
+  tipo: 'proyecto'
+});
+
+// ===== FORM TAREA =====
+const [formTarea, setFormTarea] = useState({
+  nombre: '',
+  descripcion: '',
+  prioridad: 'media',
+  proyecto: ''
+});
+
+// ===== DATA =====
+const [proyectos, setProyectos] = useState<{id:string, nombre:string}[]>([]);
+const [trabajadores, setTrabajadores] = useState<{id:string, nombre:string}[]>([]);
+const [trabajadoresSeleccionados, setTrabajadoresSeleccionados] = useState<string[]>([]);
+const [popupTrabajadores, setPopupTrabajadores] = useState(false);
+
   const getPageTitle = () => {
     switch(activeTab) {
       case 'proyectos': return 'Proyectos';
@@ -50,6 +70,46 @@ export default function HomePage() {
   const cerrarPopUp = () => {
     setPopUp(false);
   }
+
+  const handleProyectoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  setFormProyecto({
+    ...formProyecto,
+    [e.target.name]: e.target.value
+  });
+};
+
+const handleTareaChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  setFormTarea({
+    ...formTarea,
+    [e.target.name]: e.target.value
+  });
+};
+
+const toggleTrabajador = (id: string) => {
+  setTrabajadoresSeleccionados(prev =>
+    prev.includes(id)
+      ? prev.filter(t => t !== id)
+      : [...prev, id]
+  );
+};
+
+const handleSubmitProyecto = (e: React.FormEvent) => {
+  e.preventDefault();
+  console.log("Proyecto:", formProyecto);
+  cerrarPopUp();
+};
+
+const handleSubmitTarea = (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const data = {
+    ...formTarea,
+    trabajadores: trabajadoresSeleccionados
+  };
+
+  console.log("Tarea:", data);
+  cerrarPopUp();
+};
 
   return (
     <>
@@ -172,21 +232,273 @@ export default function HomePage() {
         {/* Pop-up Modal */}
         {popUp && (
           <div className="popup-overlay" onClick={cerrarPopUp}>
-            <div className="popup-content" onClick={(e) => e.stopPropagation()}>
-              <div className="popup-header">
-                <h3 className="popup-title">{activeTab === 'proyectos' ? 'Crear Nuevo Proyecto' : 'Crear Nueva Tarea'}</h3>
-                <button className="btn-close" onClick={cerrarPopUp}>&times;</button>
-              </div>
-              <div className="popup-body">
-                <p>Funcionalidad de creación próximamente...</p>
-              </div>
-              <div className="popup-footer">
-                <button className="btn-new-project" onClick={cerrarPopUp}>Cerrar</button>
-              </div>
-            </div>
+<div className="popup-content" onClick={(e) => e.stopPropagation()}>
+  <div className="popup-header">
+    <h3 className="popup-title">
+      {activeTab === 'proyectos'
+        ? 'Crear Nuevo Proyecto'
+        : 'Crear Nueva Tarea'}
+    </h3>
+    <button className="btn-close" onClick={cerrarPopUp}>&times;</button>
+  </div>
+
+  <div className="popup-body">
+
+    {/* ===== PROYECTO ===== */}
+    {activeTab === 'proyectos' && (
+      <form onSubmit={handleSubmitProyecto} className="form-popup">
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#111318' }}>
+            Nombre del Proyecto *
+          </label>
+          <input
+            type="text"
+            name="nombre"
+            placeholder="Ej: Sistema de Gestión"
+            value={formProyecto.nombre}
+            onChange={handleProyectoChange}
+            required
+            style={{
+              width: '100%',
+              padding: '12px',
+              border: '1px solid #e0e0e0',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontFamily: 'inherit',
+              boxSizing: 'border-box',
+              transition: 'border-color 0.2s'
+            }}
+          />
+        </div>
+
+        <div style={{ marginBottom: '24px' }}>
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#111318' }}>
+            Tipo de Proyecto
+          </label>
+          <select
+            name="tipo"
+            value={formProyecto.tipo}
+            onChange={handleProyectoChange}
+            style={{
+              width: '100%',
+              padding: '12px',
+              border: '1px solid #e0e0e0',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontFamily: 'inherit',
+              boxSizing: 'border-box',
+              backgroundColor: '#fff'
+            }}
+          >
+            <option value="proyecto">Proyecto</option>
+            <option value="negocio">Negocio</option>
+          </select>
+        </div>
+
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button 
+            type="submit" 
+            style={{
+              flex: 1,
+              padding: '12px 24px',
+              backgroundColor: '#0066cc',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '8px',
+              fontWeight: '600',
+              fontSize: '14px',
+              cursor: 'pointer',
+              transition: 'background-color 0.2s'
+            }}
+          >
+            Crear Proyecto
+          </button>
+        </div>
+      </form>
+    )}
+
+    {/* ===== TAREA ===== */}
+    {activeTab === 'tareas' && (
+      <form onSubmit={handleSubmitTarea} className="form-popup">
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#111318' }}>
+            Nombre de la Tarea *
+          </label>
+          <input
+            type="text"
+            name="nombre"
+            placeholder="Ej: Implementar login"
+            value={formTarea.nombre}
+            onChange={handleTareaChange}
+            required
+            style={{
+              width: '100%',
+              padding: '12px',
+              border: '1px solid #e0e0e0',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontFamily: 'inherit',
+              boxSizing: 'border-box'
+            }}
+          />
+        </div>
+
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#111318' }}>
+            Descripción
+          </label>
+          <textarea
+            name="descripcion"
+            placeholder="Describe los detalles de la tarea..."
+            value={formTarea.descripcion}
+            onChange={handleTareaChange}
+            rows={4}
+            style={{
+              width: '100%',
+              padding: '12px',
+              border: '1px solid #e0e0e0',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontFamily: 'inherit',
+              boxSizing: 'border-box',
+              resize: 'vertical'
+            }}
+          />
+        </div>
+
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#111318' }}>
+            Prioridad
+          </label>
+          <select
+            name="prioridad"
+            value={formTarea.prioridad}
+            onChange={handleTareaChange}
+            style={{
+              width: '100%',
+              padding: '12px',
+              border: '1px solid #e0e0e0',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontFamily: 'inherit',
+              boxSizing: 'border-box',
+              backgroundColor: '#fff'
+            }}
+          >
+            <option value="baja">🟢 Baja</option>
+            <option value="media">🟡 Media</option>
+            <option value="alta">🔴 Alta</option>
+          </select>
+        </div>
+
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#111318' }}>
+            Proyecto *
+          </label>
+          <select
+            name="proyecto"
+            value={formTarea.proyecto}
+            onChange={handleTareaChange}
+            style={{
+              width: '100%',
+              padding: '12px',
+              border: '1px solid #e0e0e0',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontFamily: 'inherit',
+              boxSizing: 'border-box',
+              backgroundColor: '#fff'
+            }}
+          >
+            <option value="">Selecciona un proyecto</option>
+            {proyectos.map(p => (
+              <option key={p.id} value={p.id}>
+                {p.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div style={{ marginBottom: '24px' }}>
+          <button
+            type="button"
+            onClick={() => setPopupTrabajadores(true)}
+            style={{
+              width: '100%',
+              padding: '12px',
+              backgroundColor: '#f0f2f5',
+              border: '1px solid #e0e0e0',
+              borderRadius: '8px',
+              fontWeight: '600',
+              fontSize: '14px',
+              cursor: 'pointer',
+              color: '#0066cc',
+              transition: 'all 0.2s'
+            }}
+          >
+            👥 Seleccionar trabajadores ({trabajadoresSeleccionados.length})
+          </button>
+        </div>
+
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button 
+            type="submit"
+            style={{
+              flex: 1,
+              padding: '12px 24px',
+              backgroundColor: '#0066cc',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '8px',
+              fontWeight: '600',
+              fontSize: '14px',
+              cursor: 'pointer',
+              transition: 'background-color 0.2s'
+            }}
+          >
+            Crear Tarea
+          </button>
+        </div>
+      </form>
+    )}
+
+  </div>
+
+  <div className="popup-footer">
+    <button className="btn-new-project" onClick={cerrarPopUp}>
+      Cerrar
+    </button>
+  </div>
+</div>
           </div>
         )}
+{popupTrabajadores && (
+  <div className="popup-overlay" onClick={() => setPopupTrabajadores(false)}>
+    <div className="popup-content" onClick={(e) => e.stopPropagation()}>
+      <h3>Seleccionar trabajadores</h3>
 
+      {trabajadores.map(t => (
+        <div key={t.id}>
+          <label>
+            <input
+              type="checkbox"
+              checked={trabajadoresSeleccionados.includes(t.id)}
+              onChange={() => toggleTrabajador(t.id)}
+            />
+            {t.nombre}
+          </label>
+        </div>
+      ))}
+
+      <button
+        className="btn-new-project"
+        onClick={() => setPopupTrabajadores(false)}
+      >
+        Confirmar
+      </button>
+    </div>
+  </div>
+)}
     </>
   );
 }

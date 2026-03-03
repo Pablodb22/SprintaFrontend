@@ -776,6 +776,11 @@
   justify-content: flex-end;
 }
 
+.trabajador-item {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
 /* TAREAS STYLES */
 .tareas-container {
   width: 100%;
