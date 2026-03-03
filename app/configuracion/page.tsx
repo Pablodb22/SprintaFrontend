@@ -15,7 +15,7 @@ export default function ConfiguracionPage() {
   const [loading, setLoading] = useState(true);
   const [contraseña,setContraseña]=useState({actual:"",nueva:"",confirmar:""});
   const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
-
+  
   const handleLogout = async () => {
     router.push("/");
   };
