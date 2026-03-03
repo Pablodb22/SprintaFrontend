@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { obtenerUsuario, actualizarContraseña, actualizarUsuario, fileToBase64 } from "../service/UsuarioService";
 import { useRef } from "react";
+import { funcionAdmin } from "../service/UsuarioService";
 
 export default function ConfiguracionPage() {
   const [activeTab, setActiveTab] = useState<"profile" | "security">("profile");
@@ -15,7 +16,9 @@ export default function ConfiguracionPage() {
   const [loading, setLoading] = useState(true);
   const [contraseña,setContraseña]=useState({actual:"",nueva:"",confirmar:""});
   const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
-  
+  const [esAdmin, setEsAdmin] = useState(false);
+  const [codigoEmpresa, setCodigoEmpresa] = useState("");
+
   const handleLogout = async () => {
     router.push("/");
   };
@@ -65,17 +68,18 @@ export default function ConfiguracionPage() {
   }
  
   const enviarConfiguracion = async () => {
-    try{
-      if(usuario){
+    try {
+      if (usuario) {
         const respuesta = await actualizarUsuario(usuario);
         console.log("Respuesta de actualización:", respuesta);
         showMessage('success', 'Perfil actualizado correctamente');
-      }      
-    }catch(error){
-      console.error("Error al actualizar el usuario:", error);
-      showMessage('error', 'Error al actualizar el perfil');
+      }
+    } catch (error: any) {
+      console.error("Error al actualizar el usuario:", error);    
+      const msg = error?.response?.data?.message || 'Error al actualizar el perfil';
+      showMessage('error', msg);
     }
-  }
+}
 
   const contraseñaNueva= async()=>{
     try{
@@ -111,6 +115,28 @@ export default function ConfiguracionPage() {
       [name]: value
     }));
   }
+
+  useEffect(() => {
+    const verificarAdmin = async () => {
+      let email = localStorage.getItem("sprinta_user");
+      if (!email) return;
+           
+      email = email.trim().replace(/^"|"$/g, '');
+      
+      try {
+        const resp = await funcionAdmin(email);   
+        console.log("respuesta verificar email: " + email)     
+        if (resp && resp.success) {
+          setEsAdmin(true);
+          setCodigoEmpresa(resp.data.id)          
+        }
+      } catch (err) {
+        console.error('Error verificando admin:', err);
+      }
+    };
+
+    verificarAdmin();
+  }, []);
    
   return (
     <>
@@ -395,14 +421,67 @@ export default function ConfiguracionPage() {
                         ></textarea> 
                         <p className="form-help-text">Máximo 200 caracteres.</p>
                       </div>
+
+                      <div className="mt-4">
+                        <label className="form-label-settings">Empresa</label>
+                        <div className="d-flex align-items-center gap-3 mt-2">
+                          <span
+                            className={`badge px-3 py-2 ${esAdmin ? 'bg-success' : 'bg-secondary'}`}
+                            style={{ fontSize: '0.85rem', borderRadius: '20px' }}
+                          >
+                            {esAdmin ? '✓ Administrador de empresa' : 'Usuario estándar'}
+                          </span>
+                          {esAdmin && codigoEmpresa && (
+                            <div className="form-control-settings d-flex align-items-center gap-2" style={{ width: 'auto', cursor: 'default', background: '#f8f9fa' }}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" className="bi bi-building" viewBox="0 0 16 16">
+                                <path d="M4 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/>
+                                <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1zm11 0H3v14h3v-2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V15h3z"/>
+                              </svg>
+                              <span style={{ fontSize: '0.85rem', color: '#555' }}>
+                                Código: <strong>{codigoEmpresa}</strong>
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        {!esAdmin && (
+                          <div className="mt-3">
+                            <label className="form-label-settings">Unirse a una empresa</label>
+                            <p className="form-help-text mb-2">
+                              Introduce el código que te ha proporcionado el administrador de tu empresa.
+                            </p>
+                            <div className="d-flex gap-2">
+                              <div className="input-with-icon" style={{ flex: 1 }}>
+                                <span className="material-symbols-outlined input-icon-left">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-building" viewBox="0 0 16 16">
+                                    <path d="M4 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/>
+                                    <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1zm11 0H3v14h3v-2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V15h3z"/>
+                                  </svg>
+                                </span>
+                                <input
+                                  type="text"
+                                  className="form-control-settings ps-5"
+                                  placeholder="Ej: EMP-123456"
+                                  value={usuario?.cod_empresa || ''}
+                                  name="cod_empresa"
+                                  onChange={handleInputChange}
+                                />
+                              </div>                      
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </form>
                   </div>
 
+                        
                   <div className="card-footer">                    
                     <button className="btn btn-save" onClick={enviarConfiguracion}>Guardar Cambios</button>
                   </div>
                 </section>
               )}
+
+
 
               {activeTab === "security" && (
                 <section className="settings-card">
