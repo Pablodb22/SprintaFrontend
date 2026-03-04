@@ -1191,3 +1191,31 @@
 .member-status.offline {
   background-color: #9ca3af;
 }
+
+
+.trabajador-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s;
+  margin-bottom: 20px;
+}
+
+.trabajador-item:hover {
+  background-color: #f5f5f5;
+}
+
+.trabajador-item.selected {
+  background-color: #e0f2ff;
+  border: 1px solid #2196f3;
+}
+
+.trabajador-foto {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}

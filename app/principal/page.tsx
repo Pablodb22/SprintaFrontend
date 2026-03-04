@@ -6,9 +6,9 @@ import "./principal.css";
 import ProyectosSection from "./components/ProyectosSection";
 import TareasSection from "./components/TareasSection";
 import EquipoSection from "./components/EquipoSection";
-import { funcionAdmin,buscarTrabajadores } from "../service/UsuarioService";
+import { funcionAdmin, buscarTrabajadores } from "../service/UsuarioService";
 
-export default function HomePage() {  
+export default function HomePage() {
   const [activeTab, setActiveTab] = useState('proyectos');
   const [esAdmin, setEsAdmin] = useState(false);
   const [popUp, setPopUp] = useState(false);
@@ -24,13 +24,13 @@ export default function HomePage() {
     proyecto: ''
   });
 
-  const [proyectos, setProyectos] = useState<{id:string, nombre:string,tipo:string}[]>([]);
-  const [trabajadores, setTrabajadores] = useState<{id:string, nombre:string,foto:string}[]>([]);
+  const [proyectos, setProyectos] = useState<{ id: string, nombre: string, tipo: string }[]>([]);
+  const [trabajadores, setTrabajadores] = useState<{ id: string, nombre: string, foto: string }[]>([]);
   const [trabajadoresSeleccionados, setTrabajadoresSeleccionados] = useState<string[]>([]);
   const [popupTrabajadores, setPopupTrabajadores] = useState(false);
 
   const getPageTitle = () => {
-    switch(activeTab) {
+    switch (activeTab) {
       case 'proyectos': return 'Proyectos';
       case 'tareas': return 'Mis Tareas';
       case 'equipo': return 'Equipo';
@@ -42,12 +42,12 @@ export default function HomePage() {
     const verificarAdmin = async () => {
       let email = localStorage.getItem("sprinta_user");
       if (!email) return;
-           
+
       email = email.trim().replace(/^"|"$/g, '');
-      
+
       try {
-        const resp = await funcionAdmin(email);   
-        console.log("respuesta verificar email: " + email)     
+        const resp = await funcionAdmin(email);
+        console.log("respuesta verificar email: " + email)
         if (resp && resp.success) {
           setEsAdmin(true);
         }
@@ -58,7 +58,7 @@ export default function HomePage() {
 
     verificarAdmin();
   }, []);
-  
+
   const mostrarPopUp = () => setPopUp(true);
   const cerrarPopUp = () => setPopUp(false);
 
@@ -90,27 +90,27 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    const cargarTrabajdores=async()=>{
-      
-      try{        
-          console.log("hola")
-          let email = localStorage.getItem("sprinta_user");
-          if (!email) return;
-              
-          email = email.trim().replace(/^"|"$/g, '');
+    const cargarTrabajdores = async () => {
 
-          const resp = await buscarTrabajadores(email);
-          console.log("Cargar trabajadores"+resp)
-          if(resp && resp.success) {
-            setTrabajadores(resp.data);
-          }        
-      }catch(err){
+      try {
+        console.log("hola")
+        let email = localStorage.getItem("sprinta_user");
+        if (!email) return;
+
+        email = email.trim().replace(/^"|"$/g, '');
+
+        const resp = await buscarTrabajadores(email);
+        console.log("Cargar trabajadores" + resp)
+        if (resp && resp.success) {
+          setTrabajadores(resp.data);
+        }
+      } catch (err) {
         console.error("Error cargando trabajadores:", err);
       }
     }
 
     cargarTrabajdores();
-  },[])
+  }, [])
 
   return (
     <>
@@ -128,7 +128,7 @@ export default function HomePage() {
 
               {/* Navigation */}
               <nav className="sidebar-navigation">
-                <button 
+                <button
                   onClick={() => setActiveTab('proyectos')}
                   className={`nav-link ${activeTab === 'proyectos' ? 'active' : ''}`}
                 >
@@ -137,7 +137,7 @@ export default function HomePage() {
                   </svg>
                   <span>Proyectos</span>
                 </button>
-                <button 
+                <button
                   onClick={() => setActiveTab('tareas')}
                   className={`nav-link ${activeTab === 'tareas' ? 'active' : ''}`}
                 >
@@ -147,7 +147,7 @@ export default function HomePage() {
                   </svg>
                   <span>Mis Tareas</span>
                 </button>
-                <button 
+                <button
                   onClick={() => setActiveTab('equipo')}
                   className={`nav-link ${activeTab === 'equipo' ? 'active' : ''}`}
                 >
@@ -248,20 +248,20 @@ export default function HomePage() {
                     <label className="form-label">
                       Tipo de Proyecto
                     </label>
-                      <select
-                        name="tipo"
-                        value={formProyecto.tipo}
-                        onChange={handleProyectoChange}
-                        className="form-select"
-                      >
-                        <option value="">Selecciona un tipo</option>
-                        <option value="seguridad">Seguridad</option>
-                        <option value="diseno">Diseño</option>
-                        <option value="programacion">Programación</option>
-                        <option value="marketing">Marketing</option>
-                        <option value="infraestructura">Infraestructura</option>
-                        <option value="datos">Analisis</option>
-                      </select>
+                    <select
+                      name="tipo"
+                      value={formProyecto.tipo}
+                      onChange={handleProyectoChange}
+                      className="form-select"
+                    >
+                      <option value="">Selecciona un tipo</option>
+                      <option value="seguridad">Seguridad</option>
+                      <option value="diseno">Diseño</option>
+                      <option value="programacion">Programación</option>
+                      <option value="marketing">Marketing</option>
+                      <option value="infraestructura">Infraestructura</option>
+                      <option value="datos">Analisis</option>
+                    </select>
                   </div>
 
                   <div className="form-actions">
@@ -371,18 +371,33 @@ export default function HomePage() {
         <div className="popup-overlay" onClick={() => setPopupTrabajadores(false)}>
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <h3>Seleccionar trabajadores</h3>
-            {trabajadores.map(t => (
-              <div key={t.id} className="trabajador-item">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={trabajadoresSeleccionados.includes(t.id)}
-                    onChange={() => toggleTrabajador(t.id)}
+            {trabajadores.map(t => {
+              const foto = t.foto && t.foto.trim() !== ''
+                ? t.foto
+                : 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+
+              const seleccionado = trabajadoresSeleccionados.includes(t.id);
+
+              return (
+                <div
+                  key={t.id}
+                  className={`trabajador-item ${seleccionado ? 'selected' : ''}`}
+                  onClick={() => toggleTrabajador(t.id)}
+                >
+                  <img
+                    src={foto}
+                    alt={t.nombre}
+                    className="trabajador-foto"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+                    }}
                   />
-                  {t.nombre}
-                </label>
-              </div>
-            ))}
+
+                  <span>{t.nombre}</span>
+                </div>
+              );
+            })}
             <button className="btn-new-project" onClick={() => setPopupTrabajadores(false)}>
               Confirmar
             </button>
