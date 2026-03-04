@@ -20,6 +20,7 @@ export default function ConfiguracionPage() {
   const [codigoEmpresa, setCodigoEmpresa] = useState("");
 
   const handleLogout = async () => {
+    localStorage.removeItem("sprinta_user");
     router.push("/");
   };
 
