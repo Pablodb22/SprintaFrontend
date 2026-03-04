@@ -6,13 +6,12 @@ import "./principal.css";
 import ProyectosSection from "./components/ProyectosSection";
 import TareasSection from "./components/TareasSection";
 import EquipoSection from "./components/EquipoSection";
-import { funcionAdmin } from "../service/UsuarioService";
+import { funcionAdmin,buscarTrabajadores } from "../service/UsuarioService";
 
 export default function HomePage() {  
   const [activeTab, setActiveTab] = useState('proyectos');
   const [esAdmin, setEsAdmin] = useState(false);
   const [popUp, setPopUp] = useState(false);
-
   const [formProyecto, setFormProyecto] = useState({
     nombre: '',
     tipo: ''
@@ -89,6 +88,29 @@ export default function HomePage() {
     console.log("Tarea:", data);
     cerrarPopUp();
   };
+
+  useEffect(() => {
+    const cargarTrabajdores=async()=>{
+      
+      try{        
+          console.log("hola")
+          let email = localStorage.getItem("sprinta_user");
+          if (!email) return;
+              
+          email = email.trim().replace(/^"|"$/g, '');
+
+          const resp = await buscarTrabajadores(email);
+          console.log("Cargar trabajadores"+resp)
+          if(resp && resp.success) {
+            setTrabajadores(resp.data);
+          }        
+      }catch(err){
+        console.error("Error cargando trabajadores:", err);
+      }
+    }
+
+    cargarTrabajdores();
+  },[])
 
   return (
     <>

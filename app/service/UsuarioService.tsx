@@ -141,6 +141,28 @@ export async function funcionAdmin(email: string) {
   }
 }
 
+export async function buscarTrabajadores(email: string) {
+  try{
+    const response =await fetch(`http://127.0.0.1:8000/api/buscarTrabajadores?email=${encodeURIComponent(email)}`,{
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Error completo de Laravel:", data);
+      throw new Error(data.message || data.error || "Error al buscar trabajadores");
+    }
+
+    return data;
+  }catch(error) {
+    console.error("Error en buscarTrabajadores:", error);
+  }
+}
+
 export function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
