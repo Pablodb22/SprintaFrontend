@@ -92,8 +92,7 @@ export default function HomePage() {
   useEffect(() => {
     const cargarTrabajdores = async () => {
 
-      try {
-        console.log("hola")
+      try {        
         let email = localStorage.getItem("sprinta_user");
         if (!email) return;
 
