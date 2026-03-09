@@ -8,6 +8,16 @@ import TareasSection from "./components/TareasSection";
 import EquipoSection from "./components/EquipoSection";
 import { funcionAdmin, buscarTrabajadores } from "../service/UsuarioService";
 import { crearProyecto } from "../service/ProyectoService";
+import { crearTarea } from "../service/TareaService";
+import { getProyectos } from "../service/ProyectoService";
+
+interface Proyecto {
+  id: string;
+  nombre: string;
+  tipo: string;
+  descripcion: string;
+  empresa: string;
+}
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState("proyectos");
@@ -29,9 +39,8 @@ export default function HomePage() {
     proyecto: "",
   });
 
-  const [proyectos, setProyectos] = useState<
-    { id: string; nombre: string; tipo: string }[]
-  >([]);
+  const [proyectos, setProyectos] = useState<Proyecto[]>([]);
+
   const [trabajadores, setTrabajadores] = useState<
     { id: string; nombre: string; foto: string }[]
   >([]);
@@ -52,6 +61,47 @@ export default function HomePage() {
         return "Proyectos";
     }
   };
+
+  const [codigoempresa, setCodigoEmpresa] = useState("");
+
+    useEffect(() => {
+    const verificarAdmin = async () => {
+      let email = localStorage.getItem("sprinta_user");
+      if (!email) return;
+      email = email.trim().replace(/^"|"$/g, "");
+
+      try {
+        const resp = await funcionAdmin(email);
+        let codigo = "";
+        if (resp && resp.success) {
+          codigo = resp.data.id;
+        } else {
+          codigo = resp.data.codigoempresa;
+        }
+        setCodigoEmpresa(codigo);
+      } catch (err) {
+        console.error("Error verificando admin:", err);
+      }
+    };
+    verificarAdmin();
+  }, []);
+
+    useEffect(() => {
+    if (!codigoempresa) return;
+
+    const obtenerProyectos = async () => {      
+      try {
+        const resp = await getProyectos(codigoempresa);
+        if (resp && resp.success) {
+          setProyectos(resp.data);
+        }
+      } catch (error) {
+        console.error("Error al obtener proyectos:", error);
+      }
+    };
+
+    obtenerProyectos();
+  }, [codigoempresa]);
 
   useEffect(() => {
     const verificarAdmin = async () => {
@@ -114,21 +164,30 @@ export default function HomePage() {
     }
   };
 
+ 
+
   const handleSubmitProyecto = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     try {
       await crearProyectos();
       cerrarPopUp();
-    } catch {
-      // el error ya se muestra desde crearProyectos
+    } catch(error) {
+      console.log("Error en handleSubmitProyecto:", error);
     }
   };
 
-  const handleSubmitTarea = (e: React.FormEvent) => {
+  const handleSubmitTarea = async (e: React.FormEvent) => {
     e.preventDefault();
     const data = { ...formTarea, trabajadores: trabajadoresSeleccionados };
-    console.log("Tarea:", data);
+    console.log("Tarea:", data);    
+    try{
+      const respuesta = await crearTarea(data);
+      console.log("Respuesta crear tarea: ",respuesta)
+    }catch(err){
+      console.error("Error creando tarea:", err);
+    }
+
     cerrarPopUp();
   };
 
