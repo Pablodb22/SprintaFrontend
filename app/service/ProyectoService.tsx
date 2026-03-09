@@ -1,5 +1,28 @@
-export async function getProyectos() {
+export async function getProyectos(codigoEmpresa: string) {
+    try {
+        const response = await fetch(
+            `http://127.0.0.1:8000/api/getProyectos?empresa=${codigoEmpresa}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
 
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error("Error al obtener proyectos:", data);
+            throw new Error(data.message || "Error al obtener proyectos");
+        }
+
+        return data;
+
+    } catch (error) {
+        console.error("Error en getProyectos:", error);
+        return null;
+    }
 }
 
 export async function crearProyecto(datos:any) {

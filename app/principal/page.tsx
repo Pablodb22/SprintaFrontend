@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -10,32 +10,46 @@ import { funcionAdmin, buscarTrabajadores } from "../service/UsuarioService";
 import { crearProyecto } from "../service/ProyectoService";
 
 export default function HomePage() {
-  const [activeTab, setActiveTab] = useState('proyectos');
+  const [activeTab, setActiveTab] = useState("proyectos");
   const [esAdmin, setEsAdmin] = useState(false);
   const [popUp, setPopUp] = useState(false);
+  const [error, setError] = useState('');
+
   const [formProyecto, setFormProyecto] = useState({
-    nombre: '',
-    tipo: ''
+    nombre: "",
+    tipo: "",
+    descripcion: "",
+    empresa: "",
   });
 
   const [formTarea, setFormTarea] = useState({
-    nombre: '',
-    descripcion: '',
-    prioridad: '',
-    proyecto: ''
+    nombre: "",
+    descripcion: "",
+    prioridad: "",
+    proyecto: "",
   });
 
-  const [proyectos, setProyectos] = useState<{ id: string, nombre: string, tipo: string }[]>([]);
-  const [trabajadores, setTrabajadores] = useState<{ id: string, nombre: string, foto: string }[]>([]);
-  const [trabajadoresSeleccionados, setTrabajadoresSeleccionados] = useState<string[]>([]);
+  const [proyectos, setProyectos] = useState<
+    { id: string; nombre: string; tipo: string }[]
+  >([]);
+  const [trabajadores, setTrabajadores] = useState<
+    { id: string; nombre: string; foto: string }[]
+  >([]);
+  const [trabajadoresSeleccionados, setTrabajadoresSeleccionados] = useState<
+    string[]
+  >([]);
   const [popupTrabajadores, setPopupTrabajadores] = useState(false);
 
   const getPageTitle = () => {
     switch (activeTab) {
-      case 'proyectos': return 'Proyectos';
-      case 'tareas': return 'Mis Tareas';
-      case 'equipo': return 'Equipo';
-      default: return 'Proyectos';
+      case "proyectos":
+        return "Proyectos";
+      case "tareas":
+        return "Mis Tareas";
+      case "equipo":
+        return "Equipo";
+      default:
+        return "Proyectos";
     }
   };
 
@@ -44,16 +58,16 @@ export default function HomePage() {
       let email = localStorage.getItem("sprinta_user");
       if (!email) return;
 
-      email = email.trim().replace(/^"|"$/g, '');
+      email = email.trim().replace(/^"|"$/g, "");
 
       try {
         const resp = await funcionAdmin(email);
-        console.log("respuesta verificar email: " + email)
+        formProyecto.empresa = resp.data.id;
         if (resp && resp.success) {
           setEsAdmin(true);
         }
       } catch (err) {
-        console.error('Error verificando admin:', err);
+        console.error("Error verificando admin:", err);
       }
     };
 
@@ -61,26 +75,54 @@ export default function HomePage() {
   }, []);
 
   const mostrarPopUp = () => setPopUp(true);
-  const cerrarPopUp = () => setPopUp(false);
 
-  const handleProyectoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const cerrarPopUp = () => {
+    setPopUp(false);
+    setError('');
+  };
+
+  const handleProyectoChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => {
     setFormProyecto({ ...formProyecto, [e.target.name]: e.target.value });
   };
 
-  const handleTareaChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleTareaChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
     setFormTarea({ ...formTarea, [e.target.name]: e.target.value });
   };
 
   const toggleTrabajador = (id: string) => {
-    setTrabajadoresSeleccionados(prev =>
-      prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]
+    setTrabajadoresSeleccionados((prev) =>
+      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id],
     );
   };
 
-  const handleSubmitProyecto = (e: React.FormEvent) => {
+  const crearProyectos = async () => {
+    try {
+      const respuesta = await crearProyecto(formProyecto);
+      console.log("Respuesta crear proyecto:", respuesta);
+    } catch (err: any) {
+      const mensaje = err?.message ?? String(err) ?? 'Error al crear el proyecto';
+      setError(mensaje);
+      throw err;
+    }
+  };
+
+  const handleSubmitProyecto = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Proyecto:", formProyecto);
-    cerrarPopUp();
+    setError('');
+    try {
+      await crearProyectos();
+      cerrarPopUp();
+    } catch {
+      // el error ya se muestra desde crearProyectos
+    }
   };
 
   const handleSubmitTarea = (e: React.FormEvent) => {
@@ -92,34 +134,25 @@ export default function HomePage() {
 
   useEffect(() => {
     const cargarTrabajdores = async () => {
-
-      try {        
+      try {
         let email = localStorage.getItem("sprinta_user");
         if (!email) return;
 
-        email = email.trim().replace(/^"|"$/g, '');
+        email = email.trim().replace(/^"|"$/g, "");
 
         const resp = await buscarTrabajadores(email);
-        console.log("Cargar trabajadores" + resp)
+        console.log("Cargar trabajadores" + resp);
         if (resp && resp.success) {
           setTrabajadores(resp.data);
         }
       } catch (err) {
         console.error("Error cargando trabajadores:", err);
       }
-    }
+    };
 
     cargarTrabajdores();
-  }, [])
+  }, []);
 
-  const crearProyectos = async () => {
-    try{
-      const respuesta = await crearProyecto(formProyecto);  
-      console.log("Respuesta crear proyecto:", respuesta);
-    }catch(err){
-      console.error("Error creando proyecto:", err);
-    }
-  }
   return (
     <>
       <div className="dashboard-layout">
@@ -137,29 +170,50 @@ export default function HomePage() {
               {/* Navigation */}
               <nav className="sidebar-navigation">
                 <button
-                  onClick={() => setActiveTab('proyectos')}
-                  className={`nav-link ${activeTab === 'proyectos' ? 'active' : ''}`}
+                  onClick={() => setActiveTab("proyectos")}
+                  className={`nav-link ${activeTab === "proyectos" ? "active" : ""}`}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-folder2-open" viewBox="0 0 16 16">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-folder2-open"
+                    viewBox="0 0 16 16"
+                  >
                     <path d="M1 3.5A1.5 1.5 0 0 1 2.5 2h2.764c.958 0 1.76.56 2.311 1.184C7.985 3.648 8.48 4 9 4h4.5A1.5 1.5 0 0 1 15 5.5v.64c.57.265.94.876.856 1.546l-.64 5.124A2.5 2.5 0 0 1 12.733 15H3.266a2.5 2.5 0 0 1-2.481-2.19l-.64-5.124A1.5 1.5 0 0 1 1 6.14zM2 6h12v-.5a.5.5 0 0 0-.5-.5H9c-.964 0-1.71-.629-2.174-1.154C6.374 3.334 5.82 3 5.264 3H2.5a.5.5 0 0 0-.5.5zm-.367 1a.5.5 0 0 0-.496.562l.64 5.124A1.5 1.5 0 0 0 3.266 14h9.468a1.5 1.5 0 0 0 1.489-1.314l.64-5.124A.5.5 0 0 0 14.367 7z" />
                   </svg>
                   <span>Proyectos</span>
                 </button>
                 <button
-                  onClick={() => setActiveTab('tareas')}
-                  className={`nav-link ${activeTab === 'tareas' ? 'active' : ''}`}
+                  onClick={() => setActiveTab("tareas")}
+                  className={`nav-link ${activeTab === "tareas" ? "active" : ""}`}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-check2-circle" viewBox="0 0 16 16">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-check2-circle"
+                    viewBox="0 0 16 16"
+                  >
                     <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0" />
                     <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z" />
                   </svg>
                   <span>Mis Tareas</span>
                 </button>
                 <button
-                  onClick={() => setActiveTab('equipo')}
-                  className={`nav-link ${activeTab === 'equipo' ? 'active' : ''}`}
+                  onClick={() => setActiveTab("equipo")}
+                  className={`nav-link ${activeTab === "equipo" ? "active" : ""}`}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-people" viewBox="0 0 16 16">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-people"
+                    viewBox="0 0 16 16"
+                  >
                     <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4" />
                   </svg>
                   <span>Equipo</span>
@@ -180,9 +234,16 @@ export default function HomePage() {
             </div>
 
             <div className="header-right">
-              {(activeTab === 'proyectos' && esAdmin) && (
+              {activeTab === "proyectos" && esAdmin && (
                 <button className="btn-new-project" onClick={mostrarPopUp}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-plus-circle" viewBox="0 0 16 16">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-plus-circle"
+                    viewBox="0 0 16 16"
+                  >
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
                     <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
                   </svg>
@@ -190,9 +251,16 @@ export default function HomePage() {
                 </button>
               )}
 
-              {(activeTab === 'tareas' && esAdmin) && (
+              {activeTab === "tareas" && esAdmin && (
                 <button className="btn-new-project" onClick={mostrarPopUp}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-plus-circle" viewBox="0 0 16 16">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-plus-circle"
+                    viewBox="0 0 16 16"
+                  >
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
                     <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
                   </svg>
@@ -214,9 +282,9 @@ export default function HomePage() {
 
           {/* Content */}
           <div className="dashboard-content">
-            {activeTab === 'proyectos' && <ProyectosSection />}
-            {activeTab === 'tareas' && <TareasSection />}
-            {activeTab === 'equipo' && <EquipoSection />}
+            {activeTab === "proyectos" && <ProyectosSection />}
+            {activeTab === "tareas" && <TareasSection />}
+            {activeTab === "equipo" && <EquipoSection />}
           </div>
         </main>
       </div>
@@ -227,20 +295,21 @@ export default function HomePage() {
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <div className="popup-header">
               <h3 className="popup-title">
-                {activeTab === 'proyectos' ? 'Crear Nuevo Proyecto' : 'Crear Nueva Tarea'}
+                {activeTab === "proyectos"
+                  ? "Crear Nuevo Proyecto"
+                  : "Crear Nueva Tarea"}
               </h3>
-              <button className="btn-close" onClick={cerrarPopUp}>&times;</button>
+              <button className="btn-close" onClick={cerrarPopUp}>
+                &times;
+              </button>
             </div>
 
             <div className="popup-body">
-
               {/* ===== PROYECTO ===== */}
-              {activeTab === 'proyectos' && (
+              {activeTab === "proyectos" && (
                 <form onSubmit={handleSubmitProyecto} className="form-popup">
                   <div className="form-field">
-                    <label className="form-label">
-                      Nombre del Proyecto *
-                    </label>
+                    <label className="form-label">Nombre del Proyecto *</label>
                     <input
                       type="text"
                       name="nombre"
@@ -252,10 +321,20 @@ export default function HomePage() {
                     />
                   </div>
 
+                  <div className="form-field">
+                    <label className="form-label">Descripción</label>
+                    <textarea
+                      name="descripcion"
+                      placeholder="Describe el objetivo del proyecto..."
+                      value={formProyecto.descripcion}
+                      onChange={handleProyectoChange}
+                      rows={3}
+                      className="form-textarea"
+                    />
+                  </div>
+
                   <div className="form-field-last">
-                    <label className="form-label">
-                      Tipo de Proyecto
-                    </label>
+                    <label className="form-label">Tipo de Proyecto</label>
                     <select
                       name="tipo"
                       value={formProyecto.tipo}
@@ -272,8 +351,14 @@ export default function HomePage() {
                     </select>
                   </div>
 
+                  {error && (
+                    <div className="alert alert-danger mt-2" role="alert">
+                      {error}
+                    </div>
+                  )}
+
                   <div className="form-actions">
-                    <button type="submit" className="btn-submit" onClick={crearProyectos}>
+                    <button type="submit" className="btn-submit">
                       Crear Proyecto
                     </button>
                   </div>
@@ -281,12 +366,10 @@ export default function HomePage() {
               )}
 
               {/* ===== TAREA ===== */}
-              {activeTab === 'tareas' && (
+              {activeTab === "tareas" && (
                 <form onSubmit={handleSubmitTarea} className="form-popup">
                   <div className="form-field">
-                    <label className="form-label">
-                      Nombre de la Tarea *
-                    </label>
+                    <label className="form-label">Nombre de la Tarea *</label>
                     <input
                       type="text"
                       name="nombre"
@@ -299,9 +382,7 @@ export default function HomePage() {
                   </div>
 
                   <div className="form-field">
-                    <label className="form-label">
-                      Descripción
-                    </label>
+                    <label className="form-label">Descripción</label>
                     <textarea
                       name="descripcion"
                       placeholder="Describe los detalles de la tarea..."
@@ -313,9 +394,7 @@ export default function HomePage() {
                   </div>
 
                   <div className="form-field">
-                    <label className="form-label">
-                      Prioridad
-                    </label>
+                    <label className="form-label">Prioridad</label>
                     <select
                       name="prioridad"
                       value={formTarea.prioridad}
@@ -329,9 +408,7 @@ export default function HomePage() {
                   </div>
 
                   <div className="form-field">
-                    <label className="form-label">
-                      Proyecto *
-                    </label>
+                    <label className="form-label">Proyecto *</label>
                     <select
                       name="proyecto"
                       value={formTarea.proyecto}
@@ -339,7 +416,7 @@ export default function HomePage() {
                       className="form-select"
                     >
                       <option value="">Selecciona un proyecto</option>
-                      {proyectos.map(p => (
+                      {proyectos.map((p) => (
                         <option key={p.id} value={p.id}>
                           {p.nombre}
                         </option>
@@ -353,7 +430,8 @@ export default function HomePage() {
                       onClick={() => setPopupTrabajadores(true)}
                       className="btn-workers"
                     >
-                      👥 Seleccionar trabajadores ({trabajadoresSeleccionados.length})
+                      👥 Seleccionar trabajadores (
+                      {trabajadoresSeleccionados.length})
                     </button>
                   </div>
 
@@ -376,20 +454,24 @@ export default function HomePage() {
       )}
 
       {popupTrabajadores && (
-        <div className="popup-overlay" onClick={() => setPopupTrabajadores(false)}>
+        <div
+          className="popup-overlay"
+          onClick={() => setPopupTrabajadores(false)}
+        >
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <h3>Seleccionar trabajadores</h3>
-            {trabajadores.map(t => {
-              const foto = t.foto && t.foto.trim() !== ''
-                ? t.foto
-                : 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+            {trabajadores.map((t) => {
+              const foto =
+                t.foto && t.foto.trim() !== ""
+                  ? t.foto
+                  : "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
               const seleccionado = trabajadoresSeleccionados.includes(t.id);
 
               return (
                 <div
                   key={t.id}
-                  className={`trabajador-item ${seleccionado ? 'selected' : ''}`}
+                  className={`trabajador-item ${seleccionado ? "selected" : ""}`}
                   onClick={() => toggleTrabajador(t.id)}
                 >
                   <img
@@ -398,15 +480,17 @@ export default function HomePage() {
                     className="trabajador-foto"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src =
-                        'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+                        "https://cdn-icons-png.flaticon.com/512/149/149071.png";
                     }}
                   />
-
                   <span>{t.nombre}</span>
                 </div>
               );
             })}
-            <button className="btn-new-project" onClick={() => setPopupTrabajadores(false)}>
+            <button
+              className="btn-new-project"
+              onClick={() => setPopupTrabajadores(false)}
+            >
               Confirmar
             </button>
           </div>
