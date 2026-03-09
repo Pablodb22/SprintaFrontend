@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from "react";
-import { funcionAdmin } from "@/app/service/UsuarioService";
+import { getProyectos } from "@/app/service/ProyectoService";
 import "../principal.css";
 
 export default function ProyectosSection() {
