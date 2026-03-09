@@ -7,6 +7,7 @@ import ProyectosSection from "./components/ProyectosSection";
 import TareasSection from "./components/TareasSection";
 import EquipoSection from "./components/EquipoSection";
 import { funcionAdmin, buscarTrabajadores } from "../service/UsuarioService";
+import { crearProyecto } from "../service/ProyectoService";
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('proyectos');
@@ -111,6 +112,14 @@ export default function HomePage() {
     cargarTrabajdores();
   }, [])
 
+  const crearProyectos = async () => {
+    try{
+      const respuesta = await crearProyecto(formProyecto);  
+      console.log("Respuesta crear proyecto:", respuesta);
+    }catch(err){
+      console.error("Error creando proyecto:", err);
+    }
+  }
   return (
     <>
       <div className="dashboard-layout">
@@ -255,7 +264,7 @@ export default function HomePage() {
                     >
                       <option value="">Selecciona un tipo</option>
                       <option value="seguridad">Seguridad</option>
-                      <option value="diseno">Diseño</option>
+                      <option value="diseño">Diseño</option>
                       <option value="programacion">Programación</option>
                       <option value="marketing">Marketing</option>
                       <option value="infraestructura">Infraestructura</option>
@@ -264,7 +273,7 @@ export default function HomePage() {
                   </div>
 
                   <div className="form-actions">
-                    <button type="submit" className="btn-submit">
+                    <button type="submit" className="btn-submit" onClick={crearProyectos}>
                       Crear Proyecto
                     </button>
                   </div>
