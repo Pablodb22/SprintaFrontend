@@ -119,28 +119,20 @@ export async function actualizarContraseña(datos: any) {
 }
 
 export async function funcionAdmin(email: string) {
-  try{
-    const response = await fetch(`http://127.0.0.1:8000/api/funcionAdmin?email=${encodeURIComponent(email)}`,{
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+  try {
+    const response = await fetch(
+      `http://127.0.0.1:8000/api/funcionAdmin?email=${email}`
+    );
     
     const data = await response.json();
-
-    if (!response.ok) {
-      console.error("Error completo de Laravel:", data);
-      throw new Error(data.message || data.error || "Error al verificar función de admin");
-    }
-
+    
     return data;
-
-  }catch(error) {
-    console.error("Error en funcionAdmin:", error);
+    
+  } catch (err) {
+    console.error("Error en funcionAdmin:", err);
+    return null;
   }
 }
-
 export async function buscarTrabajadores(email: string) {
   try{
     const response =await fetch(`http://127.0.0.1:8000/api/buscarTrabajadores?email=${encodeURIComponent(email)}`,{

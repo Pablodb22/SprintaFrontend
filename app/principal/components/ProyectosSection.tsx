@@ -29,27 +29,25 @@ export default function ProyectosSection() {
     return PROYECTO_VISUAL[tipo?.toLowerCase()] ?? { emoji: "📁", bgClass: "bg-blue", badgeClass: "badge-blue" };
   }
 
-  useEffect(() => {
-    const verificarAdmin = async () => {
-      let email = localStorage.getItem("sprinta_user");
-      if (!email) return;
-      email = email.trim().replace(/^"|"$/g, "");
+useEffect(() => {
+  const verificarAdmin = async () => {
+    let email = localStorage.getItem("sprinta_user");
+    if (!email) return;
+    email = email.trim().replace(/^"|"$/g, "");
 
-      try {
-        const resp = await funcionAdmin(email);
-        let codigo = "";
-        if (resp && resp.success) {
-          codigo = resp.data.id;
-        } else {
-          codigo = resp.data.codigoempresa;
-        }
-        setCodigoEmpresa(codigo);
-      } catch (err) {
-        console.error("Error verificando admin:", err);
+    try {
+      const resp = await funcionAdmin(email);
+      if (resp?.success) {
+        setCodigoEmpresa(resp.data.id);      
+      } else {
+        setCodigoEmpresa(resp.data.cod_empresa); 
       }
-    };
-    verificarAdmin();
-  }, []);
+    } catch (err) {
+      console.error("Error verificando admin:", err);
+    }
+  };
+  verificarAdmin();
+}, []);
 
   useEffect(() => {
     if (!codigoempresa) return;
