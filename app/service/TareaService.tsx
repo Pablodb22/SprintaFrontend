@@ -22,3 +22,23 @@ export async function crearTarea(tareaData: any) {
         return null;
     }        
 }
+
+export async function getTareasPorEmpresa(empresaId: string) {
+    try {
+        const respuesta = await fetch(
+            `http://127.0.0.1:8000/api/getTareasPorEmpresa?empresa_id=${empresaId}`
+        );
+
+        const data = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(data.message || "Error al obtener tareas");
+        }
+
+        return data.tareas;
+
+    } catch (err) {
+        console.error("Error en getTareasPorEmpresa:", err);
+        return null;
+    }
+}

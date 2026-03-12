@@ -64,28 +64,25 @@ export default function HomePage() {
 
   const [codigoempresa, setCodigoEmpresa] = useState("");
 
-    useEffect(() => {
-    const verificarAdmin = async () => {
-      let email = localStorage.getItem("sprinta_user");
-      if (!email) return;
-      email = email.trim().replace(/^"|"$/g, "");
+ useEffect(() => {
+  const verificarAdmin = async () => {
+    let email = localStorage.getItem("sprinta_user");
+    if (!email) return;
+    email = email.trim().replace(/^"|"$/g, "");
 
-      try {
-        const resp = await funcionAdmin(email);
-        let codigo = "";
-        if (resp && resp.success) {
-          codigo = resp.data.id;
-        } else {
-          codigo = resp.data.codigoempresa;
-        }
-        setCodigoEmpresa(codigo);
-      } catch (err) {
-        console.error("Error verificando admin:", err);
+    try {
+      const resp = await funcionAdmin(email);
+      if (resp?.success) {
+        setCodigoEmpresa(resp.data.id);        // Es admin → su propio id ES la empresa
+      } else {
+        setCodigoEmpresa(resp.data.cod_empresa); // Es individual → tiene cod_empresa
       }
-    };
-    verificarAdmin();
-  }, []);
-
+    } catch (err) {
+      console.error("Error verificando admin:", err);
+    }
+  };
+  verificarAdmin();
+}, []);
     useEffect(() => {
     if (!codigoempresa) return;
 
@@ -342,7 +339,7 @@ export default function HomePage() {
           {/* Content */}
           <div className="dashboard-content">
             {activeTab === "proyectos" && <ProyectosSection />}
-            {activeTab === "tareas" && <TareasSection />}
+            {activeTab === "tareas" && <TareasSection empresaId={codigoempresa} />}
             {activeTab === "equipo" && <EquipoSection />}
           </div>
         </main>
