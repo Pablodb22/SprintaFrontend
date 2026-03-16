@@ -42,3 +42,28 @@ export async function getTareasPorEmpresa(empresaId: string) {
         return null;
     }
 }
+
+export async function acabarTarea(tareaId: string) {
+    try {
+        const respuesta = await fetch(
+            `http://127.0.0.1:8000/api/acabarTarea/${tareaId}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        const data = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(data.message || "Error al acabar la tarea");
+        }
+
+        return data;
+    } catch (err) {
+        console.error("Error en acabarTarea:", err);
+        return null;
+    }
+}
