@@ -74,9 +74,9 @@ export default function HomePage() {
     try {
       const resp = await funcionAdmin(email);
       if (resp?.success) {
-        setCodigoEmpresa(resp.data.id);        // Es admin → su propio id ES la empresa
+        setCodigoEmpresa(resp.data.id);       
       } else {
-        setCodigoEmpresa(resp.data.cod_empresa); // Es individual → tiene cod_empresa
+        setCodigoEmpresa(resp.data.cod_empresa); 
       }
     } catch (err) {
       console.error("Error verificando admin:", err);
@@ -212,19 +212,16 @@ export default function HomePage() {
 
   return (
     <>
-      <div className="dashboard-layout">
-        {/* Sidebar */}
+      <div className="dashboard-layout">        
         <aside className="dashboard-sidebar">
           <div className="sidebar-content">
-            <div className="sidebar-top">
-              {/* Brand */}
+            <div className="sidebar-top">              
               <div className="brand-section">
                 <div className="brand-info">
                   <span className="brand-name">Sprinta</span>
                 </div>
               </div>
-
-              {/* Navigation */}
+              
               <nav className="sidebar-navigation">
                 <button
                   onClick={() => setActiveTab("proyectos")}
@@ -279,10 +276,8 @@ export default function HomePage() {
             </div>
           </div>
         </aside>
-
-        {/* Main Content */}
-        <main className="dashboard-main">
-          {/* Top Header */}
+        
+        <main className="dashboard-main">          
           <header className="dashboard-header">
             <div className="header-left">
               <div className="header-title-section">
@@ -336,8 +331,7 @@ export default function HomePage() {
               </Link>
             </div>
           </header>
-
-          {/* Content */}
+          
           <div className="dashboard-content">
             {activeTab === "proyectos" && <Suspense fallback={<Skeleton/>}><ProyectosSection /></Suspense>}
             {activeTab === "tareas" && <TareasSection empresaId={codigoempresa} />}
@@ -345,8 +339,7 @@ export default function HomePage() {
           </div>
         </main>
       </div>
-
-      {/* Pop-up Modal */}
+      
       {popUp && (
         <div className="popup-overlay" onClick={cerrarPopUp}>
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
@@ -361,8 +354,7 @@ export default function HomePage() {
               </button>
             </div>
 
-            <div className="popup-body">
-              {/* ===== PROYECTO ===== */}
+            <div className="popup-body">              
               {activeTab === "proyectos" && (
                 <form onSubmit={handleSubmitProyecto} className="form-popup">
                   <div className="form-field">
@@ -421,8 +413,7 @@ export default function HomePage() {
                   </div>
                 </form>
               )}
-
-              {/* ===== TAREA ===== */}
+              
               {activeTab === "tareas" && (
                 <form onSubmit={handleSubmitTarea} className="form-popup">
                   <div className="form-field">

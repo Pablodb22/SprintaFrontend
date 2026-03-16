@@ -47,4 +47,30 @@ export async function crearProyecto(datos:any) {
     }catch(error) {
         console.error("Error en crear proyecto:", error);
     }
-}
+
+    }
+
+    export async function eliminarProyecto(id: string) {
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/api/eliminarProyecto/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error("Error al eliminar proyecto:", data);
+            throw new Error(data.message || "Error al eliminar proyecto");
+        }
+
+        return data;
+
+    } catch (error) {
+        console.error("Error en eliminarProyecto:", error);
+        return null;
+    }
+
+    }

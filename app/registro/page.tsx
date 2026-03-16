@@ -110,8 +110,7 @@ const handleSubmit = async (e:any) => {
                   </div>
                 </div>
 
-                <form onSubmit={handleSubmit}>
-                  {/* Full Name */}
+                <form onSubmit={handleSubmit}>                  
                   <div className="mb-4">
                     <label htmlFor="fullname" className="form-label-register">
                       Nombre Completo
@@ -126,8 +125,7 @@ const handleSubmit = async (e:any) => {
                       required
                     />
                   </div>
-
-                  {/* Email */}
+                  
                   <div className="mb-4">
                     <label htmlFor="email" className="form-label-register">
                       Correo Electrónico
@@ -142,8 +140,7 @@ const handleSubmit = async (e:any) => {
                       required
                     />
                   </div>
-
-                  {/* Password */}
+                  
                   <div className="mb-4">
                     <label htmlFor="password" className="form-label-register">
                       Contraseña
@@ -159,8 +156,7 @@ const handleSubmit = async (e:any) => {
                       minLength={8}
                     />
                   </div>
-
-                  {/* Company Name */}
+                  
                   {accountType === "Empresa" && (
                     <div className="mb-4">
                       <label htmlFor="company" className="form-label-register">
@@ -177,8 +173,7 @@ const handleSubmit = async (e:any) => {
                       />
                     </div>
                   )}
-
-                  {/* Submit Button */}
+                  
                   <button type="submit" className="btn btn-register-submit w-100" disabled={loading}>
                     {loading ? (
                       <>

@@ -38,28 +38,19 @@ export default function EquipoSection() {
           <p className="equipo-stat-label">Miembros del Equipo</p>
           <p className="equipo-stat-value">{trabajadores.length}</p>
         </div>
-        <div className="equipo-stat-card">
-          <p className="equipo-stat-label">Departamentos</p>
-          <p className="equipo-stat-value">4</p>
-        </div>
-        <div className="equipo-stat-card">
-          <p className="equipo-stat-label">Activos Hoy</p>
-          <p className="equipo-stat-value">10</p>
-        </div>
+        
       </div>
 
       <div className="equipo-members">
         <h3 className="equipo-section-title">Miembros del Equipo</h3>
-
-        {/* 🔄 LOADING */}
+        
         {loading && (
           <div className="equipo-empty">
             <div className="loader"></div>
             <p>Cargando trabajadores...</p>
           </div>
         )}
-
-        {/* ❌ EMPTY */}
+        
         {!loading && trabajadores.length === 0 && (
           <div className="equipo-empty">
             <div className="empty-icon">👥</div>
@@ -67,8 +58,7 @@ export default function EquipoSection() {
             <span>Añade miembros al equipo para empezar</span>
           </div>
         )}
-
-        {/* ✅ DATA */}
+        
         {!loading && trabajadores.length > 0 &&
           trabajadores.map((trabajador) => (
             <div key={trabajador.id} className="equipo-member-item">
