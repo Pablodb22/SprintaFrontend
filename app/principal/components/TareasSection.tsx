@@ -2,13 +2,22 @@
 import { useEffect, useState } from "react";
 import { getTareasPorEmpresa, acabarTarea } from "../../service/TareaService";
 
+interface TrabajadorInfo {
+  id: string;
+  nombre: string;
+  foto: string | null;
+  cargo: string | null;
+}
+
 interface Tarea {
   id: string;
   nombre: string;
   descripcion: string;
   prioridad: "Alta" | "Media" | "Baja";
   proyecto: string;
+  proyecto_nombre: string | null;
   trabajadores: string;
+  trabajadores_info: TrabajadorInfo[];
   acabada: boolean;
 }
 
@@ -39,6 +48,31 @@ function TareaSkeletonItem() {
   );
 }
 
+function WorkerAvatar({ worker }: { worker: TrabajadorInfo }) {
+  const initials = worker.nombre
+    .split(" ")
+    .slice(0, 2)
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
+
+  return (
+    <div className="worker-card">
+      <div className="worker-avatar">
+        {worker.foto ? (
+          <img src={worker.foto} alt={worker.nombre} className="worker-avatar-img" />
+        ) : (
+          <span className="worker-avatar-initials">{initials}</span>
+        )}
+      </div>
+      <div className="worker-info">
+        <span className="worker-nombre">{worker.nombre}</span>
+        {worker.cargo && <span className="worker-cargo">{worker.cargo}</span>}
+      </div>
+    </div>
+  );
+}
+
 interface TareaModalProps {
   tarea: Tarea;
   onClose: () => void;
@@ -53,22 +87,10 @@ function TareaModal({ tarea, onClose, onAcabar, cargandoAcabar }: TareaModalProp
     Baja: "priority-low",
   };
 
-  // Parsear trabajadores si es string JSON
-  let trabajadoresList: string[] = [];
-  try {
-    trabajadoresList = typeof tarea.trabajadores === "string"
-      ? JSON.parse(tarea.trabajadores)
-      : tarea.trabajadores;
-  } catch {
-    trabajadoresList = [];
-  }
-
   return (
     <div className="tarea-modal-overlay" onClick={onClose}>
-      <div
-        className="tarea-modal"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="tarea-modal" onClick={(e) => e.stopPropagation()}>
+
         {/* Header */}
         <div className="tarea-modal-header">
           <div className="tarea-modal-title-row">
@@ -95,22 +117,32 @@ function TareaModal({ tarea, onClose, onAcabar, cargandoAcabar }: TareaModalProp
             </div>
           )}
 
+          {/* Descripción */}
           <div className="tarea-modal-section">
             <span className="tarea-modal-label">Descripción</span>
             <p className="tarea-modal-text">{tarea.descripcion || "Sin descripción."}</p>
           </div>
 
+          {/* Proyecto */}
           <div className="tarea-modal-section">
             <span className="tarea-modal-label">Proyecto</span>
-            <p className="tarea-modal-text">{tarea.proyecto}</p>
+            <div className="tarea-modal-proyecto">
+              <span className="tarea-modal-proyecto-icon">📁</span>
+              <span className="tarea-modal-text">
+                {tarea.proyecto_nombre ?? tarea.proyecto}
+              </span>
+            </div>
           </div>
 
-          {trabajadoresList.length > 0 && (
+          {/* Trabajadores */}
+          {tarea.trabajadores_info && tarea.trabajadores_info.length > 0 && (
             <div className="tarea-modal-section">
-              <span className="tarea-modal-label">Trabajadores asignados</span>
-              <div className="tarea-modal-workers">
-                {trabajadoresList.map((w, i) => (
-                  <span key={i} className="tarea-modal-worker-chip">{w}</span>
+              <span className="tarea-modal-label">
+                Trabajadores asignados ({tarea.trabajadores_info.length})
+              </span>
+              <div className="tarea-modal-workers-list">
+                {tarea.trabajadores_info.map((w) => (
+                  <WorkerAvatar key={w.id} worker={w} />
                 ))}
               </div>
             </div>
@@ -151,7 +183,7 @@ function TareaModal({ tarea, onClose, onAcabar, cargandoAcabar }: TareaModalProp
           background: #fff;
           border-radius: 16px;
           width: 100%;
-          max-width: 480px;
+          max-width: 500px;
           max-height: 85vh;
           overflow-y: auto;
           box-shadow: 0 24px 60px rgba(0,0,0,0.18);
@@ -196,15 +228,12 @@ function TareaModal({ tarea, onClose, onAcabar, cargandoAcabar }: TareaModalProp
           flex-shrink: 0;
           margin-top: 2px;
         }
-        .tarea-modal-close:hover {
-          background: #f0f0f0;
-          color: #333;
-        }
+        .tarea-modal-close:hover { background: #f0f0f0; color: #333; }
         .tarea-modal-body {
           padding: 16px 24px;
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: 18px;
         }
         .tarea-modal-badge-acabada {
           display: inline-flex;
@@ -221,7 +250,7 @@ function TareaModal({ tarea, onClose, onAcabar, cargandoAcabar }: TareaModalProp
         .tarea-modal-section {
           display: flex;
           flex-direction: column;
-          gap: 4px;
+          gap: 6px;
         }
         .tarea-modal-label {
           font-size: 0.72rem;
@@ -236,21 +265,72 @@ function TareaModal({ tarea, onClose, onAcabar, cargandoAcabar }: TareaModalProp
           margin: 0;
           line-height: 1.5;
         }
-        .tarea-modal-workers {
+        .tarea-modal-proyecto {
           display: flex;
-          flex-wrap: wrap;
-          gap: 6px;
-          margin-top: 2px;
+          align-items: center;
+          gap: 8px;
+          background: #f7f7fb;
+          border: 1px solid #ebebf5;
+          border-radius: 8px;
+          padding: 8px 12px;
+          width: fit-content;
         }
-        .tarea-modal-worker-chip {
-          background: #f0f0ff;
-          color: #4040c0;
-          font-size: 0.78rem;
-          font-weight: 500;
-          padding: 3px 10px;
-          border-radius: 20px;
-          border: 1px solid #d0d0f0;
+        .tarea-modal-proyecto-icon { font-size: 0.95rem; }
+
+        /* Worker cards */
+        .tarea-modal-workers-list {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
         }
+        .worker-card {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          background: #f9f9fc;
+          border: 1px solid #ebebf5;
+          border-radius: 10px;
+          padding: 8px 12px;
+          transition: background 0.15s;
+        }
+        .worker-card:hover { background: #f0f0f8; }
+        .worker-avatar {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          overflow: hidden;
+          flex-shrink: 0;
+          background: #1a1a2e;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .worker-avatar-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        .worker-avatar-initials {
+          color: #fff;
+          font-size: 0.75rem;
+          font-weight: 700;
+          letter-spacing: 0.03em;
+        }
+        .worker-info {
+          display: flex;
+          flex-direction: column;
+          gap: 1px;
+        }
+        .worker-nombre {
+          font-size: 0.87rem;
+          font-weight: 600;
+          color: #1a1a2e;
+        }
+        .worker-cargo {
+          font-size: 0.75rem;
+          color: #888;
+        }
+
         .tarea-modal-footer {
           padding: 0 24px 24px 24px;
         }
@@ -271,10 +351,7 @@ function TareaModal({ tarea, onClose, onAcabar, cargandoAcabar }: TareaModalProp
           background: #2d2d5e;
           transform: translateY(-1px);
         }
-        .tarea-modal-btn-acabar:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
+        .tarea-modal-btn-acabar:disabled { opacity: 0.6; cursor: not-allowed; }
       `}</style>
     </div>
   );
@@ -371,7 +448,9 @@ export default function TareasSection({ empresaId }: { empresaId: string }) {
                     {tarea.descripcion}
                   </p>
                   <div className="tarea-meta">
-                    <span className="tarea-proyecto">{tarea.proyecto}</span>
+                    <span className="tarea-proyecto">
+                      {tarea.proyecto_nombre ?? tarea.proyecto}
+                    </span>
                   </div>
                 </div>
               </div>
