@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { getProyectos } from "@/app/service/ProyectoService";
 import "../principal.css";
 import { funcionAdmin } from "../../service/UsuarioService";
+import Skeleton from "@/app/Components/skeleton";
 
 interface Proyecto {
   id: string;
@@ -16,38 +17,39 @@ export default function ProyectosSection() {
   const [proyectos, setProyectos] = useState<Proyecto[]>([]);
   const [codigoempresa, setCodigoEmpresa] = useState("");
   const [cargando, setCargando] = useState(true);
+
   const PROYECTO_VISUAL: Record<string, { emoji: string; bgClass: string; badgeClass: string }> = {
-    seguridad: { emoji: "🔒", bgClass: "bg-purple", badgeClass: "badge-blue" },
-    diseño: { emoji: "🎨", bgClass: "bg-rose", badgeClass: "badge-rose" },
-    programacion: { emoji: "💻", bgClass: "bg-blue", badgeClass: "badge-blue" },
-    marketing: { emoji: "📣", bgClass: "bg-amber", badgeClass: "badge-amber" },
-    infraestructura: { emoji: "🏗️", bgClass: "bg-emerald", badgeClass: "badge-emerald" },
-    datos: { emoji: "📊", bgClass: "bg-rose", badgeClass: "badge-rose" },
+    seguridad:      { emoji: "🔒", bgClass: "bg-purple",  badgeClass: "badge-blue"    },
+    diseño:         { emoji: "🎨", bgClass: "bg-rose",    badgeClass: "badge-rose"    },
+    programacion:   { emoji: "💻", bgClass: "bg-blue",    badgeClass: "badge-blue"    },
+    marketing:      { emoji: "📣", bgClass: "bg-amber",   badgeClass: "badge-amber"   },
+    infraestructura:{ emoji: "🏗️", bgClass: "bg-emerald", badgeClass: "badge-emerald" },
+    datos:          { emoji: "📊", bgClass: "bg-rose",    badgeClass: "badge-rose"    },
   };
 
   function getProyectoVisual(tipo: string) {
     return PROYECTO_VISUAL[tipo?.toLowerCase()] ?? { emoji: "📁", bgClass: "bg-blue", badgeClass: "badge-blue" };
   }
 
-useEffect(() => {
-  const verificarAdmin = async () => {
-    let email = localStorage.getItem("sprinta_user");
-    if (!email) return;
-    email = email.trim().replace(/^"|"$/g, "");
+  useEffect(() => {
+    const verificarAdmin = async () => {
+      let email = localStorage.getItem("sprinta_user");
+      if (!email) return;
+      email = email.trim().replace(/^"|"$/g, "");
 
-    try {
-      const resp = await funcionAdmin(email);
-      if (resp?.success) {
-        setCodigoEmpresa(resp.data.id);      
-      } else {
-        setCodigoEmpresa(resp.data.cod_empresa); 
+      try {
+        const resp = await funcionAdmin(email);
+        if (resp?.success) {
+          setCodigoEmpresa(resp.data.id);
+        } else {
+          setCodigoEmpresa(resp.data.cod_empresa);
+        }
+      } catch (err) {
+        console.error("Error verificando admin:", err);
       }
-    } catch (err) {
-      console.error("Error verificando admin:", err);
-    }
-  };
-  verificarAdmin();
-}, []);
+    };
+    verificarAdmin();
+  }, []);
 
   useEffect(() => {
     if (!codigoempresa) return;
@@ -69,6 +71,8 @@ useEffect(() => {
     obtenerProyectos();
   }, [codigoempresa]);
 
+  if (cargando) return <Skeleton />;
+
   return (
     <>
       <div className="stats-grid">
@@ -81,54 +85,7 @@ useEffect(() => {
       </div>
 
       <div className="projects-grid">
-       {cargando ? (
-  <>
-    {[1, 2, 3, 4].map((i) => (
-      <div className="project-card" key={i} style={{ overflow: "hidden" }}>
-        <div className="project-card-header">          
-          <div style={{
-            width: "40px", height: "40px", borderRadius: "10px",
-            background: "linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%)",
-            backgroundSize: "200% 100%",
-            animation: "shimmer 1.5s infinite",
-          }} />          
-          <div style={{
-            width: "70px", height: "22px", borderRadius: "20px",
-            background: "linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%)",
-            backgroundSize: "200% 100%",
-            animation: "shimmer 1.5s infinite",
-          }} />
-        </div>
-        
-        <div style={{
-          width: "70%", height: "18px", borderRadius: "6px", margin: "12px 0 8px",
-          background: "linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%)",
-          backgroundSize: "200% 100%",
-          animation: "shimmer 1.5s infinite",
-        }} />
-        
-        <div style={{
-          width: "100%", height: "13px", borderRadius: "6px", marginBottom: "6px",
-          background: "linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%)",
-          backgroundSize: "200% 100%",
-          animation: "shimmer 1.5s infinite",
-        }} />
-        <div style={{
-          width: "60%", height: "13px", borderRadius: "6px",
-          background: "linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%)",
-          backgroundSize: "200% 100%",
-          animation: "shimmer 1.5s infinite",
-        }} />
-      </div>
-    ))}
-    <style>{`
-      @keyframes shimmer {
-        0%   { background-position: 200% 0; }
-        100% { background-position: -200% 0; }
-      }
-    `}</style>
-  </>
-) : proyectos.length === 0 ? (
+        {proyectos.length === 0 ? (
           <p>No hay proyectos registrados.</p>
         ) : (
           proyectos.map((p) => {
