@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import "./principal.css";
 import ProyectosSection from "./components/ProyectosSection";
 import TareasSection from "./components/TareasSection";
@@ -10,6 +10,7 @@ import { funcionAdmin, buscarTrabajadores } from "../service/UsuarioService";
 import { crearProyecto } from "../service/ProyectoService";
 import { crearTarea } from "../service/TareaService";
 import { getProyectos } from "../service/ProyectoService";
+import Skeleton from "../Components/skeleton";
 
 interface Proyecto {
   id: string;
@@ -338,7 +339,7 @@ export default function HomePage() {
 
           {/* Content */}
           <div className="dashboard-content">
-            {activeTab === "proyectos" && <ProyectosSection />}
+            {activeTab === "proyectos" && <Suspense fallback={<Skeleton/>}><ProyectosSection /></Suspense>}
             {activeTab === "tareas" && <TareasSection empresaId={codigoempresa} />}
             {activeTab === "equipo" && <EquipoSection />}
           </div>
