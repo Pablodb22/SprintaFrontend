@@ -67,3 +67,23 @@ export async function acabarTarea(tareaId: string) {
         return null;
     }
 }
+
+export async function getTareasPorProyecto(proyectoId:string){
+    try {
+        const respuesta = await fetch(
+            `http://127.0.0.1:8000/api/getTareasPorProyecto?proyectoId=${proyectoId}`
+        );
+
+        const data = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(data.message || "Error al obtener tareas");
+        }
+
+        return data.tareas;
+
+    } catch (err) {
+        console.error("Error en getTareasPorProyecto:", err);
+        return null;
+    }
+}

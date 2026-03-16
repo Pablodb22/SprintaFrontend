@@ -25,8 +25,7 @@ export default function Home() {
     <>
       <Navbar />
 
-      <main>
-        {/* Hero Section */}
+      <main>        
         <section className="hero-section">
           <div className="container">
             <div className="row">
@@ -49,8 +48,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-
-            {/* Product Mockup */}
+           
             <div className="mockup-container">
               <div className="mockup-image">
                 <div className="mockup-inner">
@@ -66,8 +64,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        {/* Social Proof */}
+        
         <section className="social-proof">
           <div className="container">
             <p className="social-proof-title">
@@ -99,8 +96,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        {/* Features Section */}
+        
         <section className="features-section">
           <div className="container">
             <div className="mb-5">
@@ -156,8 +152,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        {/* CTA Section */}
+        
         <section className="cta-wrapper">
           <div className="container">
             <div className="cta-section position-relative">

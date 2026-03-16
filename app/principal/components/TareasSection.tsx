@@ -89,9 +89,7 @@ function TareaModal({ tarea, onClose, onAcabar, cargandoAcabar }: TareaModalProp
 
   return (
     <div className="tarea-modal-overlay" onClick={onClose}>
-      <div className="tarea-modal" onClick={(e) => e.stopPropagation()}>
-
-        {/* Header */}
+      <div className="tarea-modal" onClick={(e) => e.stopPropagation()}>        
         <div className="tarea-modal-header">
           <div className="tarea-modal-title-row">
             <h2
@@ -108,22 +106,18 @@ function TareaModal({ tarea, onClose, onAcabar, cargandoAcabar }: TareaModalProp
             ✕
           </button>
         </div>
-
-        {/* Cuerpo */}
         <div className="tarea-modal-body">
           {tarea.acabada && (
             <div className="tarea-modal-badge-acabada">
               ✓ Tarea completada
             </div>
           )}
-
-          {/* Descripción */}
+          
           <div className="tarea-modal-section">
             <span className="tarea-modal-label">Descripción</span>
             <p className="tarea-modal-text">{tarea.descripcion || "Sin descripción."}</p>
           </div>
-
-          {/* Proyecto */}
+          
           <div className="tarea-modal-section">
             <span className="tarea-modal-label">Proyecto</span>
             <div className="tarea-modal-proyecto">
@@ -133,8 +127,6 @@ function TareaModal({ tarea, onClose, onAcabar, cargandoAcabar }: TareaModalProp
               </span>
             </div>
           </div>
-
-          {/* Trabajadores */}
           {tarea.trabajadores_info && tarea.trabajadores_info.length > 0 && (
             <div className="tarea-modal-section">
               <span className="tarea-modal-label">
@@ -148,8 +140,7 @@ function TareaModal({ tarea, onClose, onAcabar, cargandoAcabar }: TareaModalProp
             </div>
           )}
         </div>
-
-        {/* Footer */}
+        
         {!tarea.acabada && (
           <div className="tarea-modal-footer">
             <button
@@ -276,8 +267,7 @@ function TareaModal({ tarea, onClose, onAcabar, cargandoAcabar }: TareaModalProp
           width: fit-content;
         }
         .tarea-modal-proyecto-icon { font-size: 0.95rem; }
-
-        /* Worker cards */
+         
         .tarea-modal-workers-list {
           display: flex;
           flex-direction: column;
