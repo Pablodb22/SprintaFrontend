@@ -2,7 +2,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function registroUsuario(datos: any) {
   try {
-    const response = await fetch(`${API_URL}/api/registro`, {
+    const response = await fetch(`${API_URL}/registro`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -26,7 +26,7 @@ export async function registroUsuario(datos: any) {
 
 export async function loginUsuario(datos: any) {
   try{
-    const response=await fetch(`${API_URL}/api/login`,{
+    const response=await fetch(`${API_URL}/login`,{
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -50,7 +50,7 @@ export async function loginUsuario(datos: any) {
 
 export async function obtenerUsuario(email: string) {
   try{
-    const response=await fetch(`http://127.0.0.1:8000/api/usuario?email=${email}`,{
+    const response=await fetch(`${API_URL}/usuario?email=${email}`,{
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -73,7 +73,7 @@ export async function obtenerUsuario(email: string) {
 
 export async function actualizarUsuario(datos: any) {
    try{   
-    const response = await fetch(`http://127.0.0.1:8000/api/usuarioActualizado?email=${encodeURIComponent(datos.email)}`, {
+    const response = await fetch(`${API_URL}/usuarioActualizado?email=${encodeURIComponent(datos.email)}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -97,7 +97,7 @@ export async function actualizarUsuario(datos: any) {
 
 export async function actualizarContraseña(datos: any) {
  try{
-  const response=await fetch(`http://127.0.0.1:8000/api/usuarioNuevaPassword?email=${encodeURIComponent(datos.email)}`,{
+  const response=await fetch(`${API_URL}/usuarioNuevaPassword?email=${encodeURIComponent(datos.email)}`,{
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -123,7 +123,7 @@ export async function actualizarContraseña(datos: any) {
 export async function funcionAdmin(email: string) {
   try {
     const response = await fetch(
-      `http://127.0.0.1:8000/api/funcionAdmin?email=${email}`
+      `${API_URL}/funcionAdmin?email=${email}`
     );
     
     const data = await response.json();
@@ -137,7 +137,7 @@ export async function funcionAdmin(email: string) {
 }
 export async function buscarTrabajadores(email: string) {
   try{
-    const response =await fetch(`http://127.0.0.1:8000/api/buscarTrabajadores?email=${encodeURIComponent(email)}`,{
+    const response =await fetch(`${API_URL}/buscarTrabajadores?email=${encodeURIComponent(email)}`,{
       method: "GET",
       headers: {
         "Content-Type": "application/json",
