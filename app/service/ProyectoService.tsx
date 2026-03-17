@@ -1,7 +1,9 @@
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export async function getProyectos(codigoEmpresa: string) {
     try {
         const response = await fetch(
-            `http://127.0.0.1:8000/api/getProyectos?empresa=${codigoEmpresa}`,
+            `${API_URL}/api/getProyectos?empresa=${codigoEmpresa}`,
             {
                 method: "GET",
                 headers: {
@@ -27,7 +29,7 @@ export async function getProyectos(codigoEmpresa: string) {
 
 export async function crearProyecto(datos:any) {
     try{
-        const response = await fetch(`http://127.0.0.1:8000/api/crearProyectos`,{
+        const response = await fetch(`${API_URL}/api/crearProyectos`,{
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -52,7 +54,7 @@ export async function crearProyecto(datos:any) {
 
     export async function eliminarProyecto(id: string) {
     try {
-        const response = await fetch(`http://127.0.0.1:8000/api/eliminarProyecto/${id}`, {
+        const response = await fetch(`${API_URL}/api/eliminarProyecto/${id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",

@@ -1,6 +1,8 @@
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export async function registroUsuario(datos: any) {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/registro", {
+    const response = await fetch(`${API_URL}/api/registro`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -24,7 +26,7 @@ export async function registroUsuario(datos: any) {
 
 export async function loginUsuario(datos: any) {
   try{
-    const response=await fetch("http://127.0.0.1:8000/api/login",{
+    const response=await fetch(`${API_URL}/api/login`,{
       method: "POST",
       headers: {
         "Content-Type": "application/json",
