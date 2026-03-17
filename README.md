@@ -2,7 +2,7 @@
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black.svg?logo=next.js)](https://nextjs.org) [![React](https://img.shields.io/badge/React-19-blue.svg?logo=react)](https://react.dev) [![TypeScript](https://img.shields.io/badge/TypeScript-5-orange.svg)](https://typescriptlang.org) [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-green.svg?logo=tailwindcss)](https://tailwindcss.com)
 
-**Sprinta Frontend** es la interfaz web moderna y responsive construida con **Next.js 16 (App Router)** que consume la [API del backend Laravel](https://github.com/[tu-usuario]/sprinta-backend). Ofrece una experiencia fluida para gestión de proyectos colaborativos.
+**Sprinta Frontend** es la interfaz web moderna y responsive construida con **Next.js 16 (App Router)** que consume la [API del backend Laravel](https://github.com/Pablodb22/SprintaBackend). Ofrece una experiencia fluida para gestión de proyectos colaborativos.
 
 ## 🛠️ Tecnologías del Stack
 
