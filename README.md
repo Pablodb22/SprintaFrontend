@@ -12,8 +12,6 @@
 | **UI Library** | React + TypeScript | 19.x + 5.x |
 | **CSS** | TailwindCSS + Bootstrap | 4.x + 5.3 |
 | **Backend API** | Laravel 12 (RESTful) | PostgreSQL |
-| **Despliegue** | Vercel | ✅ Optimizado |
-| **Linting** | ESLint 9 | Configurado |
 
 ## ✨ Funcionalidades Principales
 
